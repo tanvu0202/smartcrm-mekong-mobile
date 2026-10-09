@@ -1,0 +1,199 @@
+<mxfile host="Electron" agent="Claude">
+  <diagram id="p0" name="ERD">
+    <mxGraphModel dx="1709" dy="1200" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;service_center&lt;/b&gt;" vertex="1">
+          <mxGeometry height="126" width="360" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="c2" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;center_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: SERIAL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="c2" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;UQ&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;name&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(100)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="c2" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;address&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(255)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="c2" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;phone&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;technician&lt;/b&gt;" vertex="1">
+          <mxGeometry height="150" width="360" x="480" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="c7" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;technician_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: SERIAL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" parent="c7" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;center_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="c7" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;full_name&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(100)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="c7" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;UQ&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;phone&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="c7" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;is_active&amp;nbsp;&amp;nbsp;&lt;font&gt;: BOOLEAN&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;technician_skill&lt;/b&gt;" vertex="1">
+          <mxGeometry height="102" width="360" x="920" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="c13" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK,FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;technician_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="c13" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;issue_group&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(30)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="c13" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;proficiency&amp;nbsp;&amp;nbsp;&lt;font&gt;: SMALLINT (1–5)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;ticket&lt;/b&gt;" vertex="1">
+          <mxGeometry height="386" width="360" x="480" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;ticket_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: SERIAL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;UQ&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ticket_code&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;center_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;technician_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT (NULL)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;customer_name&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(100)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;customer_phone&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;device_model&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(100)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="174" as="geometry" />
+        </mxCell>
+        <mxCell id="c25" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;issue_group&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(30)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="c26" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;issue_description&amp;nbsp;&amp;nbsp;&lt;font&gt;: TEXT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="c27" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;priority&amp;nbsp;&amp;nbsp;&lt;font&gt;: SMALLINT (1–3)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;status&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;due_date&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="294" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=11;html=1;whiteSpace=wrap;fontColor=#000000;" value="▸ idx_ticket_queue (center_id, status, priority, due_date)" vertex="1">
+          <mxGeometry height="22" width="360" y="342" as="geometry" />
+        </mxCell>
+        <mxCell id="c32" parent="c17" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=11;html=1;whiteSpace=wrap;fontColor=#000000;" value="▸ idx_ticket_tech (technician_id, status, due_date)" vertex="1">
+          <mxGeometry height="22" width="360" y="364" as="geometry" />
+        </mxCell>
+        <mxCell id="c33" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;appointment&lt;/b&gt;" vertex="1">
+          <mxGeometry height="220" width="360" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="c34" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;appointment_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: SERIAL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c35" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ticket_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c36" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;appointment_type&amp;nbsp;&amp;nbsp;&lt;font&gt;: GIAO | NHAN&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c37" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;start_time&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c38" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;end_time&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="c39" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;status&amp;nbsp;&amp;nbsp;&lt;font&gt;: DA_DAT | DA_HUY&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="c40" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="174" as="geometry" />
+        </mxCell>
+        <mxCell id="c41" parent="c33" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=11;html=1;whiteSpace=wrap;fontColor=#000000;" value="▸ idx_appt_ticket (ticket_id, start_time, end_time)" vertex="1">
+          <mxGeometry height="22" width="360" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="c42" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fontSize=15;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;b&gt;ticket_log&lt;/b&gt;" vertex="1">
+          <mxGeometry height="292" width="360" x="920" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="c43" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;PK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;log_id&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;: BIGSERIAL&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c44" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ticket_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c45" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;action&amp;nbsp;&amp;nbsp;&lt;font&gt;: PHAN_CONG | DOI_KTV | DOI_TRANG_THAI&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="c46" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;old_technician_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT (NULL)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c47" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;new_technician_id&amp;nbsp;&amp;nbsp;&lt;font&gt;: INT (NULL)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="c48" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;old_status&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="c49" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;new_status&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(20)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="174" as="geometry" />
+        </mxCell>
+        <mxCell id="c50" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;reason&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(255)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="c51" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;changed_by&amp;nbsp;&amp;nbsp;&lt;font&gt;: VARCHAR(50)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="c52" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=12;html=1;whiteSpace=wrap;fontColor=#000000;" value="&lt;font&gt;&lt;b&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;changed_at&amp;nbsp;&amp;nbsp;&lt;font&gt;: TIMESTAMPTZ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="360" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="c53" parent="c42" style="text;align=left;verticalAlign=middle;spacingLeft=6;fontSize=11;html=1;whiteSpace=wrap;fontColor=#000000;" value="▸ idx_log_ticket_time (ticket_id, changed_at)" vertex="1">
+          <mxGeometry height="22" width="360" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="c54" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c55" edge="1" parent="1" source="c7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c13" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c56" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c17" value="">
+          <mxGeometry relative="1" x="0.2263" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="385.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c57" edge="1" parent="1" source="c7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c17" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c58" edge="1" parent="1" source="c17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c33" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c59" edge="1" parent="1" source="c17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c42" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c60" edge="1" parent="1" source="c7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=ERmandOne;endArrow=ERmany;startFill=0;endFill=0;strokeWidth=2;html=1;fontColor=#000000;" target="c42" value="">
+          <mxGeometry relative="1" x="-0.2276" as="geometry">
+            <Array as="points">
+              <mxPoint x="773.1" y="245.7" />
+              <mxPoint x="1100" y="245.7" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c61" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#999999;dashed=1;align=left;spacingLeft=8;fontSize=12;html=1;whiteSpace=wrap;" value="&lt;b&gt;Chú thích:&lt;/b&gt; PK khóa chính (khóa thay thế SERIAL) · FK khóa ngoại · UQ duy nhất · ▸ index · đường nối: 1 – N (chân quạ ở phía N).&lt;br&gt;ticket.technician_id cho phép NULL khi phiếu ở trạng thái MOI (CHECK ràng buộc với status). Thông tin khách (customer_*) lưu kèm phiếu vì bảng khách hàng thuộc luồng L2 (ngoài phạm vi)." vertex="1">
+          <mxGeometry height="60" width="1240" x="40" y="820" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

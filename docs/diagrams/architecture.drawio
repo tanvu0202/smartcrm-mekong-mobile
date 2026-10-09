@@ -1,0 +1,97 @@
+<mxfile host="Electron" agent="Claude">
+  <diagram id="p0" name="Kiến trúc 4 lớp">
+    <mxGraphModel dx="1709" dy="1200" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1360" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" parent="1" style="text;fontSize=14;fontStyle=1;align=left;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Kiến trúc 4 lớp – Hệ thống phân công kỹ thuật viên và lịch hẹn bảo hành Mekong Mobile&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="900" x="40" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="rounded=1;arcSize=4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Lớp 1 · Giao diện (React)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Trách nhiệm: hiển thị, nhập liệu, kiểm tra định dạng cơ bản; KHÔNG chứa quy tắc nghiệp vụ.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="900" x="40" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;M1 Phiếu chờ phân công&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;FR01, FR06, FR08&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="55" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;M2 Phân công &amp;amp; lịch hẹn&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;FR02, FR03, FR04, FR07&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="275" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;M3 Phiếu của tôi&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;FR05, FR09&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="495" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="rounded=1;arcSize=4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Lớp 2 · API (Express – Controller / Route)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Trách nhiệm: xác thực vai trò, validate đầu vào, ánh xạ DTO, trả mã lỗi HTTP; không truy cập CSDL.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="900" x="40" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;TicketController&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;GET /tickets?status=MOI&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="55" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;AssignmentController&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;POST /tickets/:id/assign · /reassign&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="275" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;AppointmentController&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;POST /appointments&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="495" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;StatusController&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;PATCH /tickets/:id/status&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="715" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="1" style="rounded=1;arcSize=4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Lớp 3 · Nghiệp vụ (Service)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Trách nhiệm: toàn bộ quy tắc QT-01…QT-06; điều khiển transaction; ghi ticket_log cùng transaction.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="900" x="40" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;AssignmentService&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;QT-02, QT-03, QT-04, QT-06&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="55" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;AppointmentService&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;QT-05 (trùng lịch)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="275" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;TicketStatusService&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;QT-01 (vòng đời)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="495" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;NotificationService&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;retry ≤ 3 (NFR06)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="46" width="205" x="715" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="1" style="rounded=1;arcSize=4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Lớp 4 · Lưu trữ (Repository + PostgreSQL)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Trách nhiệm: truy vấn/ghi dữ liệu, ràng buộc toàn vẹn (PK, FK, CHECK, UNIQUE), index; không chứa quy tắc nghiệp vụ.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="170" width="900" x="40" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;service_center&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="55" y="692" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;technician&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="275" y="692" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;technician_skill&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="495" y="692" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;ticket&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="715" y="692" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;appointment&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="55" y="744" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" parent="1" style="rounded=1;align=left;spacingLeft=6;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;ticket_log&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="205" x="275" y="744" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" edge="1" parent="1" source="c3" style="endArrow=block;strokeWidth=2;html=1;fontFamily=Times New Roman;fontSize=14;" target="c7" value="HTTPS · REST/JSON · token mang vai trò (Quản lý / Kỹ thuật viên)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c25" edge="1" parent="1" source="c7" style="endArrow=block;strokeWidth=2;html=1;fontFamily=Times New Roman;fontSize=14;" target="c12" value="Gọi hàm trực tiếp · truyền DTO (không truyền đối tượng HTTP)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c26" edge="1" parent="1" source="c12" style="endArrow=block;strokeWidth=2;html=1;fontFamily=Times New Roman;fontSize=14;" target="c17" value="Repository interface · SQL tham số hóa (driver pg) · transaction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c27" parent="1" style="rounded=1;dashed=1;strokeWidth=2;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Dịch vụ SMS/email (hệ thống ngoài)&lt;/b&gt;&lt;br&gt;Gửi thông báo lịch hẹn tới Khách hàng." vertex="1">
+          <mxGeometry height="70" width="330" x="1280" y="487" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" edge="1" parent="1" source="c16" style="endArrow=block;dashed=1;strokeWidth=2;html=1;fontFamily=Times New Roman;fontSize=14;" target="c27" value="HTTPS API · bất đồng bộ · thử lại ≤ 3 lần">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" parent="1" style="rounded=0;align=left;spacingLeft=8;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Chú thích ký hiệu&lt;/b&gt;&lt;br&gt;■ Hộp màu = một lớp; hộp trắng = thành phần trong lớp&lt;br&gt;↓ Mũi tên liền = gọi đồng bộ, chỉ đi xuống lớp liền kề&lt;br&gt;┅ Hộp/mũi tên nét đứt = hệ thống ngoài, gọi bất đồng bộ&lt;br&gt;Tên bảng ở Lớp 4 khớp đúng ERD (erd.drawio)" vertex="1">
+          <mxGeometry height="120" width="330" x="990" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" parent="1" style="rounded=0;align=left;spacingLeft=8;fontSize=14;html=1;whiteSpace=wrap;fontFamily=Times New Roman;" value="&lt;b&gt;Ngoài phạm vi&lt;/b&gt;&lt;br&gt;Tiếp nhận phiếu (L2) · Quản lý kho linh kiện (L5) · Khảo sát hài lòng (L8) · Báo cáo doanh thu, phân loại bằng AI (L10) · Thanh toán · Đăng nhập/quản lý tài khoản" vertex="1">
+          <mxGeometry height="110" width="330" x="990" y="200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
