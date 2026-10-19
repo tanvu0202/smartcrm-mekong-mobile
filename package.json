@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "start": "node src/backend/index.js",
+    "migrate": "node src/backend/scripts/migrate.js",
+    "test": "node --test"
+  },
   "dependencies": {
-    "mongoose": "^9.10.2"
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
   }
 }
