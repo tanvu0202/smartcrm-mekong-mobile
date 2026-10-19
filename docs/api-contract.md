@@ -1,194 +1,44 @@
-# API Contract – L4. Phân công kỹ thuật viên và lịch hẹn
+# Hợp đồng API – Sprint 1 (L4)
 
-**Sinh viên:** Trần Tấn Vũ – 2374802010573  
-**Track:** SE  
-**Phiên bản:** 1.0
+Base URL: `http://localhost:3000/api` · JSON UTF-8 · không xác thực (đăng nhập ngoài phạm vi).
+Lỗi luôn có dạng `{ "error": { "code": "...", "message": "...", "details": [...] } }`.
 
----
+| Method | Đường dẫn | Mục đích | Thành công | Lỗi chính |
+|---|---|---|---|---|
+| GET | /health | Kiểm tra server + DB | 200 | 503 |
+| GET | /tickets?status=&center_id=&technician_id= | Danh sách phiếu (sắp theo ưu tiên, hạn cam kết) – UC01 bước 1 | 200 `{data:[…]}` | – |
+| GET | /tickets/{id} | Chi tiết phiếu | 200 | 404 |
+| POST | /tickets | *Hỗ trợ (TD-11)* tạo phiếu thử, trạng thái MOI | 201 | 400 |
+| PUT | /tickets/{id} | *Hỗ trợ* sửa thông tin, chỉ khi MOI | 200 | 400, 404, 409 `TICKET_NOT_EDITABLE` |
+| DELETE | /tickets/{id} | *Hỗ trợ* xóa phiếu MOI | 204 | 404, 409 `TICKET_NOT_DELETABLE` |
+| GET | /tickets/{id}/suggestions | Đề xuất KTV: cùng trung tâm, tay nghề ≥ 3 (QT-03), kèm `open_tickets`, `overloaded` (QT-06) | 200 | 404 |
+| POST | /tickets/{id}/assign | Phân công **lần đầu** (chỉ phiếu MOI → DA_PHAN_CONG) | 200 `{ticket, log, warnings}` | 400, 404, 409, 422 |
+| POST | /tickets/{id}/reassign | **Đổi** KTV (QT-04): bắt buộc `reason`; phiếu DANG_XU_LY cần `confirm:true` | 200 `{ticket, log, warnings}` | 400, 404, 409, 422 |
+| GET | /tickets/{id}/history | Lịch sử thay đổi từ `ticket_log` | 200 | 404 |
 
-## 1. Danh sách Endpoint (cho các story MUST)
+## POST /tickets (body)
+```json
+{ "centerId": 1, "customerName": "Nguyễn Văn A", "customerPhone": "0912345678",
+  "deviceModel": "iPhone 13", "issueGroup": "MAN_HINH", "priority": 1,
+  "issueDescription": "Vỡ màn hình", "dueDate": "2026-10-25T10:00:00Z" }
+```
+`priority`: 1=CAO, 2=TRUNG_BINH, 3=THAP · `issueGroup`: MAN_HINH, PIN, SAC, LOA, CAMERA, PHAN_MEM, KHAC.
 
-| Method | Endpoint                            | Mục đích                     | User Story  |
-| ------ | ----------------------------------- | ---------------------------- | ----------- |
-| GET    | /api/tickets/{ticketId}/suggestions | Gợi ý kỹ thuật viên phù hợp  | US1 / FR-01 |
-| POST   | /api/tickets/{ticketId}/assign      | Phân công kỹ thuật viên      | US2 / FR-02 |
-| POST   | /api/tickets/{ticketId}/reassign    | Phân công lại kỹ thuật viên  | US7 / FR-03 |
-| POST   | /api/appointments                   | Tạo lịch hẹn giao – nhận máy | US3 / FR-04 |
-| GET    | /api/appointments/check-conflict    | Kiểm tra trùng lịch          | US3 / FR-05 |
+## POST /tickets/{id}/assign và /reassign (body)
+```json
+{ "technicianId": 3, "changedBy": "dieu.phoi", "reason": "(bắt buộc khi reassign)", "confirm": true }
+```
+| HTTP | code | Khi nào | Quy tắc |
+|---|---|---|---|
+| 400 | VALIDATION_ERROR | thiếu technicianId/changedBy; reassign không có reason | QT-04 |
+| 404 | NOT_FOUND | phiếu không tồn tại | |
+| 409 | TICKET_ALREADY_ASSIGNED | `assign` khi phiếu không còn MOI – gồm trường hợp **hai người phân công đồng thời**, người đến sau thua | QT-02, UC01 5b |
+| 409 | TICKET_NOT_ASSIGNED | `reassign` khi phiếu chưa có KTV | QT-02 |
+| 409 | ALREADY_ASSIGNED | gán lại đúng KTV hiện tại | QT-02 |
+| 409 | CONFIRM_REQUIRED | `reassign` phiếu DANG_XU_LY mà thiếu `confirm:true` | QT-04, TD-10 |
+| 409 | TICKET_CLOSED | phiếu HOAN_TAT | QT-01 |
+| 422 | TECH_OTHER_CENTER / TECH_INVALID | KTV khác trung tâm / không tồn tại / ngừng hoạt động | QT-03 |
 
----
+Phản hồi 200 có thể kèm `warnings:[{code:"TECH_OVERLOADED"}]` khi KTV đạt ≥ 10 phiếu mở sau lần gán này (QT-06 – chỉ cảnh báo). Đổi trạng thái phiếu và ghi `ticket_log` xảy ra trong **một transaction**, dòng phiếu được khóa bằng `SELECT … FOR UPDATE` nên các yêu cầu đồng thời xếp hàng (NFR05).
 
-## 2. Chi tiết từng Endpoint
-
-### 2.1 GET /api/tickets/{ticketId}/suggestions
-
-**Mục đích:** Trả về danh sách kỹ thuật viên đủ điều kiện cho phiếu.
-
-**Request:** Không có body
-
-**Response thành công (200):**
-
-{
-"ticketId": 1052,
-"suggestions": [
-{
-"technicianId": 12,
-"fullName": "Nguyễn Văn Dũng",
-"skillLevel": 3,
-"openTickets": 4,
-"serviceArea": "Quận 10"
-},
-{
-"technicianId": 18,
-"fullName": "Trần Minh Khoa",
-"skillLevel": 2,
-"openTickets": 6,
-"serviceArea": "Quận 10"
-}
-]
-}
-
-**Mã lỗi:**
-
-- 404: Không tìm thấy phiếu
-- 400: Phiếu không ở trạng thái Chờ phân công
-
----
-
-### 2.2 POST /api/tickets/{ticketId}/assign
-
-**Mục đích:** Gán kỹ thuật viên cho phiếu.
-
-**Request body:**
-
-{
-"technicianId": 12,
-"note": "Phân công theo đề xuất hệ thống"
-}
-
-**Response thành công (200):**
-
-{
-"ticketId": 1052,
-"status": "ASSIGNED",
-"technicianId": 12,
-"assignedAt": "2026-10-02T14:30:00",
-"assignedBy": "manager01"
-}
-
-**Mã lỗi:**
-
-- 400: Dữ liệu không hợp lệ
-- 404: Không tìm thấy phiếu hoặc kỹ thuật viên
-- 409: Kỹ thuật viên đã đủ tải (≥ 8 phiếu) hoặc không đủ điều kiện
-
----
-
-### 2.3 POST /api/tickets/{ticketId}/reassign
-
-**Mục đích:** Đổi kỹ thuật viên đang phụ trách phiếu.
-
-**Request body:**
-
-{
-"newTechnicianId": 18,
-"reason": "Kỹ thuật viên cũ nghỉ phép"
-}
-
-**Response thành công (200):**
-
-{
-"ticketId": 1052,
-"oldTechnicianId": 12,
-"newTechnicianId": 18,
-"reason": "Kỹ thuật viên cũ nghỉ phép",
-"reassignedAt": "2026-10-02T15:10:00"
-}
-
-**Mã lỗi:**
-
-- 400: Thiếu lý do
-- 409: Kỹ thuật viên mới không đủ điều kiện hoặc bị trùng lịch
-
----
-
-### 2.4 POST /api/appointments
-
-**Mục đích:** Tạo lịch hẹn giao hoặc nhận máy.
-
-**Request body:**
-
-{
-"ticketId": 1052,
-"type": "PICK_UP",
-"startAt": "2026-10-05T09:00:00",
-"endAt": "2026-10-05T09:30:00",
-"note": "Khách nhận máy vào buổi sáng"
-}
-
-**Response thành công (201):**
-
-{
-"appointmentId": 301,
-"ticketId": 1052,
-"technicianId": 12,
-"type": "PICK_UP",
-"startAt": "2026-10-05T09:00:00",
-"endAt": "2026-10-05T09:30:00",
-"status": "PENDING_CONFIRMATION"
-}
-
-**Mã lỗi:**
-
-- 400: Thời gian không hợp lệ (ngoài giờ làm việc hoặc trong quá khứ)
-- 409: Trùng lịch với lịch hẹn khác của cùng kỹ thuật viên
-
----
-
-### 2.5 GET /api/appointments/check-conflict
-
-**Mục đích:** Kiểm tra trùng lịch trước khi tạo.
-
-**Query params:**  
-technicianId=12&startAt=2026-10-05T09:00:00&endAt=2026-10-05T09:30:00
-
-**Response thành công (200):**
-
-{
-"hasConflict": false,
-"conflicts": []
-}
-
-**Khi có trùng (200):**
-
-{
-"hasConflict": true,
-"conflicts": [
-{
-"appointmentId": 288,
-"startAt": "2026-10-05T08:45:00",
-"endAt": "2026-10-05T09:15:00"
-}
-]
-}
-
----
-
-## 3. Bảng Validation các trường quan trọng
-
-| Trường         | Bắt buộc          | Kiểu dữ liệu | Ràng buộc                                                 |
-| -------------- | ----------------- | ------------ | --------------------------------------------------------- |
-| technicianId   | Có                | number       | Phải tồn tại và đang active                               |
-| ticketId       | Có                | number       | Phải ở trạng thái phù hợp                                 |
-| reason         | Có (khi reassign) | string       | Độ dài 5–255 ký tự                                        |
-| type           | Có                | string       | Chỉ nhận DROP_OFF hoặc PICK_UP                            |
-| startAt, endAt | Có                | datetime     | Trong tương lai, trong khung 08:00–17:30, endAt > startAt |
-| note           | Không             | string       | Tối đa 500 ký tự                                          |
-
----
-
-## 4. Quy ước chung
-
-- Tất cả API yêu cầu header: Authorization: Bearer <token>
-- Content-Type: application/json
-- Thời gian trả về theo ISO 8601 (UTC+7)
+*Chưa làm ở Sprint 1:* đặt lịch hẹn (`/appointments`), cập nhật trạng thái DANG_XU_LY → HOAN_TAT, tổng quan khối lượng (xem README mục 6).

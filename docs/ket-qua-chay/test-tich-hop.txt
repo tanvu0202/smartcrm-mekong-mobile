@@ -1,0 +1,26 @@
+# Kết quả chạy 19 test (15 unit + 4 tích hợp) trên PostgreSQL 16, ngày 19/10/2026.
+# Lưu ý: môi trường soạn bài không tải được gói npm 'pg' nên test tích hợp chạy qua bộ giả lập pg dùng psql thật
+# (mỗi kết nối là một tiến trình psql, khóa dòng và transaction là của PostgreSQL thật). Hãy chạy lại bằng 'pg' thật trên máy em.
+ok 1 - 2 yêu cầu phân công đồng thời: 1 thành công, 1 bị 409, log đúng 1 dòng
+ok 2 - 2 yêu cầu ĐỔI KTV đồng thời cho cùng một phiếu: kết quả cuối nhất quán, log khớp
+ok 3 - findCandidates: cùng trung tâm, tay nghề ≥ 3, đúng nhóm sự cố, đang hoạt động
+ok 4 - findCandidates: không có KTV phù hợp trả mảng rỗng (ngoại lệ 4a UC01)
+ok 5 - phân công lần đầu: MOI -> DA_PHAN_CONG và ghi log PHAN_CONG (QT-01, NFR05)
+ok 6 - KTV khác trung tâm bị từ chối 422 (QT-03)
+ok 7 - gán lại đúng KTV hiện tại bị 409 (QT-02)
+ok 8 - đổi KTV không có lý do bị 400 (QT-04)
+ok 9 - đổi KTV phiếu DANG_XU_LY cần confirm=true (QT-04)
+ok 10 - phiếu HOAN_TAT không phân công được (QT-01)
+ok 11 - KTV đã có 9 phiếu mở: vẫn gán được nhưng có cảnh báo (QT-06)
+ok 12 - KTV có 3 phiếu mở: không cảnh báo
+ok 13 - phiếu không tồn tại -> 404
+ok 14 - đề xuất đánh dấu overloaded theo ngưỡng 10
+ok 15 - tạo phiếu thiếu trường / sai priority -> 400
+ok 16 - tạo phiếu hợp lệ sinh mã BH-xxxx
+ok 17 - chỉ sửa/xóa được phiếu MOI
+ok 18 - phân công lần đầu cho phiếu đã có KTV -> 409 TICKET_ALREADY_ASSIGNED (UC01 5b)
+ok 19 - đổi KTV cho phiếu chưa có KTV -> 409 TICKET_NOT_ASSIGNED
+# tests 19
+# pass 19
+# fail 0
+# skipped 0
