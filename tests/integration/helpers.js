@@ -25,8 +25,9 @@ function load() {
   const ticketRepo = require('../../src/backend/src/repositories/ticketRepository');
   const technicianRepo = require('../../src/backend/src/repositories/technicianRepository');
   const logRepo = require('../../src/backend/src/repositories/ticketLogRepository');
+  const appointmentRepo = require('../../src/backend/src/repositories/appointmentRepository');
   const { createTicketService } = require('../../src/backend/src/services/ticketService');
-  const service = createTicketService({ ticketRepo, technicianRepo, logRepo, db: pool, withTransaction, config: {} });
+  const service = createTicketService({ ticketRepo, technicianRepo, logRepo, appointmentRepo, db: pool, withTransaction, config: {} });
   return { pool, withTransaction, ticketRepo, technicianRepo, logRepo, service };
 }
 
@@ -54,6 +55,7 @@ const ticketInput = (centerId, over = {}) => ({
 });
 /** Xóa dữ liệu test theo thứ tự khóa ngoại. */
 async function cleanup(pool, centerId) {
+  await pool.query('DELETE FROM appointment WHERE ticket_id IN (SELECT ticket_id FROM ticket WHERE center_id=$1)', [centerId]);
   await pool.query('DELETE FROM ticket_log WHERE ticket_id IN (SELECT ticket_id FROM ticket WHERE center_id=$1)', [centerId]);
   await pool.query('DELETE FROM ticket WHERE center_id=$1', [centerId]);
   await pool.query('DELETE FROM technician_skill WHERE technician_id IN (SELECT technician_id FROM technician WHERE center_id=$1)', [centerId]);
