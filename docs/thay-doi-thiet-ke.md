@@ -2,7 +2,7 @@
 
 ## Sau phản hồi Bài tập 1 (buổi 8, ngày 19/10/2026)
 
-TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên về BT1 (điểm cần khắc phục và gợi ý cho BT2). TD-08..TD-12 là thay đổi phát sinh khi hiện thực Sprint 1.
+TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên về BT1 (điểm cần khắc phục và gợi ý cho BT2). TD-08..TD-13 là thay đổi phát sinh khi hiện thực Sprint 1; TD-14..TD-16 phát sinh ở Sprint 2 (cuối tệp).
 
 ### TD-01 Giảm số User Story từ 9 xuống 7
 - Phản hồi của GV : "Có 9 User Story, đề yêu cầu 5–7. Có thể gộp US08 (lọc) vào US01."
@@ -77,3 +77,36 @@ TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên v
 - Quyết định      : GIỮ NGUYÊN thiết kế, hoãn hiện thực
 - Lý do           : Buổi 8 chỉ yêu cầu module đầu tiên chạy được; phân công là lõi của L4, đặt lịch phụ thuộc vào phân công.
 - Ảnh hưởng       : Bảng `appointment` đã tạo bằng migration nhưng chưa có endpoint; ghi ở README mục 6.
+
+### TD-13 Cơ sở dữ liệu: PostgreSQL thay cho MongoDB Atlas đã ghi ở form đăng ký phạm vi (TH01)
+- Phản hồi của GV : Không có (tự phát hiện khi đối chiếu TH01 với BT1).
+- Quyết định      : GIỮ PostgreSQL (đã dùng từ BT1)
+- Lý do           : Dữ liệu L4 có quan hệ chặt (ticket – technician – appointment – ticket_log), cần ràng buộc CHECK/khóa ngoại, transaction nhiều bảng (NFR05) và khóa dòng `SELECT … FOR UPDATE` để chống phân công đồng thời. Các ràng buộc này là cốt lõi của thiết kế BT1 và đã được kiểm chứng bằng test.
+- Ảnh hưởng       : Stack ghi ở README mục 3 là PostgreSQL; DDL BT1 giữ nguyên; không có thành phần MongoDB trong mã nguồn.
+
+## Thay đổi phát sinh khi hiện thực Sprint 2 (Buổi 10, ngày 23/10/2026)
+
+### TD-14 Thêm đăng nhập tối thiểu theo vai trò (SRS 1.5 từng coi là ngoài phạm vi)
+- Phản hồi của GV : Không có (tự phát hiện khi làm giao diện).
+- Quyết định      : SỬA
+- Lý do           : Đề Buổi 10 yêu cầu có đăng nhập và khi nhận 401 phải xóa token, về trang đăng nhập; M3 "Phiếu của tôi" cũng chỉ có nghĩa khi biết ai đang đăng nhập. SRS 1.5 giả định có "dịch vụ xác thực có sẵn" nhưng dịch vụ đó không tồn tại trong dự án, nên dựng bản thay thế nhỏ nhất. Không tạo bảng tài khoản: ba tài khoản demo (1 quản lý, 2 kỹ thuật viên) khai báo trong mã, mật khẩu băm scrypt khi khởi động; token HS256 ký bằng `node:crypto` (không thêm thư viện). Kỹ thuật viên liên kết với bản ghi `technician` qua số điện thoại.
+- Ảnh hưởng       : ERD và DDL BT1 giữ nguyên. Thêm `POST /auth/login`, `GET /auth/me`; mọi endpoint khác cần `Authorization: Bearer`; 401 `UNAUTHENTICATED` / `TOKEN_EXPIRED` / `INVALID_CREDENTIALS`; 403 `FORBIDDEN`. Biến môi trường mới `AUTH_SECRET`, `DEMO_PASSWORD`, `TOKEN_TTL_SECONDS`, `CORS_ORIGIN`. SRS mục 1.1 và 1.5 thêm ghi chú trỏ về TD này. Giới hạn đã biết: không quản lý tài khoản, không đổi mật khẩu, không thu hồi token trước hạn.
+
+### TD-15 Phạm vi giao diện Sprint 2: làm 3 màn hình + Đăng nhập, cắt các phần còn lại
+- Phản hồi của GV : Không có.
+- Quyết định      : CẮT PHẠM VI (ghi lý do), giữ nguyên thiết kế
+- Lý do           : Ưu tiên một luồng chạy trọn trên dữ liệu thật (đăng nhập → phân công → đổi KTV → KTV xem phiếu) và mọi màn hình xử lý đủ trạng thái tải / lỗi / rỗng, hơn là nhiều màn hình dở dang. Các phần cắt đều cần thêm API, màn hình và kiểm thử riêng.
+- Ảnh hưởng       :
+  - Làm: Đăng nhập · M1 danh sách phiếu (lọc trạng thái, trung tâm) · M2 chi tiết, đề xuất, phân công, đổi KTV, lịch sử · M3 phiếu của kỹ thuật viên.
+  - Cắt khỏi M2: khối "Lịch hẹn" của wireframe (QT-05, đã hoãn từ TD-12; bảng `appointment` vẫn còn trong migration, chưa có endpoint). Hệ quả: FR04, FR07 và US04 chưa có giao diện.
+  - Cắt khỏi M1: bộ lọc theo mức ưu tiên và khối tổng quan (phiếu hôm nay, quá hạn, số phiếu mở của từng KTV – US06). Mức ưu tiên vẫn hiển thị và là tiêu chí sắp xếp danh sách.
+  - Cắt khỏi M3: nút cập nhật trạng thái DANG_XU_LY / HOAN_TAT (phần FR09 của US05), nên M3 chỉ xem.
+  - Cắt: thông báo lịch hẹn cho khách (US07) vì phụ thuộc lịch hẹn.
+  - Khác wireframe: cảnh báo kỹ thuật viên ≥ 10 phiếu (UC01 5a) hiện dưới dạng dòng cảnh báo sau khi phân công (API trả `warnings`, QT-06 chỉ cảnh báo) thay cho hộp hỏi Có / Không trước khi phân công; xác nhận phân công là một bước xác nhận riêng trong trang.
+
+### TD-16 Bổ sung endpoint tra cứu, `changedBy` lấy từ token, kỹ thuật viên chỉ thấy phiếu của mình
+- Phản hồi của GV : Không có.
+- Quyết định      : SỬA
+- Lý do           : (1) Bộ lọc trung tâm của M1 và hộp chọn thủ công của M2 (SRS US02, ngoại lệ "cho chọn thủ công trong trung tâm") cần danh sách trung tâm và kỹ thuật viên. (2) Khi đã có đăng nhập, để client tự gửi `changedBy` trong body thì ai cũng ghi lịch sử dưới tên người khác; NFR05 cần nhật ký đáng tin. (3) Chỉ ẩn nút trên giao diện thì không bảo vệ được dữ liệu, nên quyền được ép ở server.
+- Ảnh hưởng       : Thêm `GET /centers`, `GET /technicians?center_id=` (chỉ quản lý). `ticket_log.changed_by` luôn lấy từ token; trường `changedBy` trong body bị bỏ qua. Kỹ thuật viên gọi `GET /tickets` chỉ nhận phiếu của chính mình (bộ lọc `technician_id` bị ghi đè), mở phiếu người khác trả 403; tạo / sửa / xóa / đề xuất / phân công / đổi KTV / lịch sử chỉ cho quản lý. docs/api-contract.md cập nhật; có test ở tests/auth.test.js.
+

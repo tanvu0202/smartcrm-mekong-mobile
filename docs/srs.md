@@ -10,7 +10,7 @@
 
 Mục đích: đặc tả yêu cầu cho luồng L4 – phân công kỹ thuật viên và đặt lịch hẹn cho phiếu bảo hành tại Mekong Mobile. Luồng bắt đầu từ phiếu ở trạng thái "Mới" → quản lý phân công kỹ thuật viên phù hợp → đặt lịch hẹn giao/nhận máy (khách nhận thông báo) → kỹ thuật viên nhận phiếu và cập nhật trạng thái đến khi hoàn tất.
 
-**Trong phạm vi:** xem phiếu chờ phân công; đề xuất, phân công và đổi kỹ thuật viên; đặt lịch hẹn; thông báo lịch hẹn; xem phiếu được giao; cập nhật trạng thái; tổng quan khối lượng; lọc phiếu. **Ngoài phạm vi:** tiếp nhận và phân loại yêu cầu (L2); quản lý kho linh kiện (L5); khảo sát hài lòng (L8); báo cáo doanh thu, phân loại bằng AI (L10); thanh toán; đăng nhập/quản lý tài khoản.
+**Trong phạm vi:** xem phiếu chờ phân công; đề xuất, phân công và đổi kỹ thuật viên; đặt lịch hẹn; thông báo lịch hẹn; xem phiếu được giao; cập nhật trạng thái; tổng quan khối lượng; lọc phiếu. **Ngoài phạm vi:** tiếp nhận và phân loại yêu cầu (L2); quản lý kho linh kiện (L5); khảo sát hài lòng (L8); báo cáo doanh thu, phân loại bằng AI (L10); thanh toán; quản lý tài khoản (đăng nhập tối thiểu theo vai trò đã được thêm ở Sprint 2 – xem TD-14 trong docs/thay-doi-thiet-ke.md).
 
 **Bảng thuật ngữ – mỗi khái niệm chỉ dùng MỘT tên trong SRS, sơ đồ kiến trúc, ERD và wireframe:**
 
@@ -137,7 +137,7 @@ Mục đích: đặc tả yêu cầu cho luồng L4 – phân công kỹ thuật
 
 ## **1.5. Ràng buộc và quy tắc nghiệp vụ**
 
-Ràng buộc: stack Node.js (Express) + ReactJS + PostgreSQL, triển khai trên Render, công cụ Postman và Git; prototype chạy được trước Buổi 12. Nhật ký và tài khoản người dùng dùng dịch vụ xác thực có sẵn (ngoài phạm vi).
+Ràng buộc: stack Node.js (Express) + ReactJS + PostgreSQL, triển khai trên Render, công cụ Postman và Git; prototype chạy được trước Buổi 12. Nhật ký và tài khoản người dùng dùng dịch vụ xác thực có sẵn (ngoài phạm vi); vì dự án chưa có dịch vụ đó, Sprint 2 dựng bản đăng nhập tối thiểu với ba tài khoản demo (TD-14).
 
 - QT-01: Phiếu tuân thủ vòng đời Mới → Đã phân công → Đang xử lý → Hoàn tất, không được bỏ qua bước.
 
