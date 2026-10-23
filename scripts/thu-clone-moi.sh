@@ -28,7 +28,7 @@ say "Nguồn: $URL"
 say "Thư mục thử: $DEST"
 if [ -e "$DEST" ]; then say "Thư mục thử đã tồn tại. Xóa nó (hoặc truyền đường dẫn khác ở tham số 2) rồi chạy lại."; exit 1; fi
 
-step "Bước 1 – git clone" git clone "$URL" "$DEST"
+step "Bước 1 – git clone" git clone -b "$(git -C "$SRC" branch --show-current)" "$URL" "$DEST"
 cd "$DEST" || exit 1
 # .env chứa mật khẩu nên không nằm trên GitHub: chép từ bản đang dùng (đúng như bước 2 của README: tạo .env rồi điền)
 if [ -f "$SRC/.env" ]; then cp "$SRC/.env" .env; say "(đã chép .env từ thư mục làm việc – không commit)"; else say "Chưa có $SRC/.env – hãy tạo .env trước."; exit 1; fi
