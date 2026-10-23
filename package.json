@@ -4,7 +4,7 @@
     "migrate": "node src/backend/scripts/migrate.js",
     "test": "node --test",
     "db:create": "node src/backend/scripts/create-db.js",
-    "install:all": "npm install && npm --prefix src/frontend install",
+    "install:all": "npm install && cd src/frontend && npm install",
     "web": "npm --prefix src/frontend run dev",
     "web:build": "npm --prefix src/frontend run build",
     "test:full": "node scripts/chay-test-day-du.js"
