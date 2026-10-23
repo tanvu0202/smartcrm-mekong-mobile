@@ -1,0 +1,72 @@
+/* Bảng màu và bố cục theo wireframe BT1 (docs/diagrams/wireframe.drawio):
+   thanh tiêu đề xanh đen #33415C, tab, thẻ viền xám, bảng đầu cột #DDE3EE, khung rỗng nét đứt, hộp báo lỗi/thành công/cảnh báo. */
+:root { --navy:#33415C; --ink:#1f2933; --muted:#666; --line:#aaa; --line-soft:#d4d9e1; --bg:#fafafa; --head:#dde3ee;
+  --red:#c53030; --red-bg:#fdecec; --red-ink:#9b2c2c; --green:#2f855a; --green-bg:#eaf7f0; --green-ink:#1f5c3e;
+  --amber:#c77700; --amber-bg:#fff6e5; --amber-ink:#7a4a00; }
+* { box-sizing:border-box; }
+body { margin:0; font:14px/1.5 system-ui, "Segoe UI", Roboto, Arial, sans-serif; color:var(--ink); background:#eef0f4; }
+a { color:var(--navy); }
+h1 { font-size:18px; margin:14px 0 14px; } h2 { font-size:14px; margin:0 0 10px; }
+
+.topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:0 24px; height:44px; background:var(--navy); color:#fff; }
+.topbar strong { font-size:14px; } .who { font-size:13px; display:flex; gap:12px; align-items:center; }
+.tabs { display:flex; gap:6px; padding:14px 24px 0; max-width:1100px; margin:0 auto; flex-wrap:wrap; }
+.tab { padding:5px 16px; border:1px solid #bbb; background:#eee; color:var(--ink); font-size:13px; text-decoration:none; }
+.tab.active { background:#fff; font-weight:700; border-bottom-color:#fff; } .tab.disabled { color:#999; cursor:default; }
+.page { max-width:1100px; margin:0 auto; padding:0 24px 48px; }
+.frame { background:var(--bg); border:2px solid #444; border-top-width:1px; padding:6px 20px 22px; margin-top:-1px; }
+
+.card { background:#fff; border:1px solid #888; border-radius:6px; padding:12px 14px; margin:0 0 14px; }
+.card h2 { font-size:13px; }
+.cards3 { display:grid; grid-template-columns:200px 230px 1fr; gap:14px; margin-bottom:14px; }
+.stat strong { display:block; font-size:22px; line-height:1.2; } .stat span { font-size:12px; }
+.stat.red { color:var(--red); } .stat .over { color:var(--red); font-weight:700; }
+@media (max-width:820px) { .cards3 { grid-template-columns:1fr; } .m2 { grid-template-columns:1fr !important; } }
+
+.filters { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin:0 0 12px; }
+.filters label { margin:0; }
+label { display:flex; flex-direction:column; gap:3px; font-size:12px; color:#555; margin:8px 0; }
+label.check { flex-direction:row; align-items:center; gap:8px; }
+input, select, textarea { font:inherit; padding:5px 8px; border:1px solid #888; border-radius:5px; background:#fff; min-width:110px; }
+textarea { width:100%; } input[type=radio], input[type=checkbox] { min-width:0; }
+
+.table { width:100%; border-collapse:collapse; background:#fff; font-size:13px; }
+.table th, .table td { padding:7px 8px; border:1px solid var(--line); text-align:left; vertical-align:middle; }
+.table th { background:var(--head); font-size:12px; }
+.note { font-size:11px; color:var(--muted); margin:8px 0; }
+
+.btn { display:inline-block; font:inherit; font-size:13px; padding:5px 14px; border:1px solid var(--navy); border-radius:6px; background:#fff; color:var(--navy); cursor:pointer; text-decoration:none; }
+.btn-primary, .btn-dark { background:var(--navy); border-color:var(--navy); color:#fff; } .btn:hover:not(:disabled) { filter:brightness(.92); }
+.btn:disabled { opacity:.5; cursor:not-allowed; } .btn-sm { padding:3px 10px; font-size:12px; }
+.topbar .btn { background:#fff; color:var(--navy); }
+.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+
+.badge { display:inline-block; padding:0 8px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
+.prio-1 { background:#fde8e8; color:#9b1c1c; } .prio-2 { background:#fff4d6; color:#8a5a00; } .prio-3 { background:#e5f0ff; color:#1e429f; }
+.st-MOI { background:#fff4d6; color:#8a5a00; } .st-DA_PHAN_CONG { background:#e5f0ff; color:#1e429f; }
+.st-DANG_XU_LY { background:#e8f5ee; color:#0e6b3a; } .st-HOAN_TAT { background:#eceff3; color:#4b5563; } .st-warn { background:var(--amber-bg); color:var(--amber-ink); border:1px solid var(--amber); }
+.overdue { color:var(--red); font-weight:700; }
+.muted { color:var(--muted); } .small { font-size:12px; }
+
+.state { padding:10px 12px; border-radius:6px; margin:10px 0; border:2px solid var(--line-soft); background:#fff; font-size:13px; }
+.state-loading { color:var(--muted); display:flex; gap:10px; align-items:center; border-width:1px; }
+.state-empty { color:var(--muted); text-align:center; border:2px dashed #888; padding:20px; }
+.state-error { border-color:var(--red); background:var(--red-bg); color:var(--red-ink); } .state-error p { margin:0 0 8px; }
+.state-ok { border-color:var(--green); background:var(--green-bg); color:var(--green-ink); }
+.state-warn { border-color:var(--amber); background:var(--amber-bg); color:var(--amber-ink); }
+.warn { margin-top:4px; }
+.spinner { width:14px; height:14px; border:2px solid #cbd5e0; border-top-color:var(--navy); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.m2 { display:grid; grid-template-columns:400px 1fr; gap:16px; align-items:start; }
+.kv { display:grid; grid-template-columns:110px 1fr; gap:3px 8px; margin:0; font-size:13px; } .kv dt { color:#555; } .kv dd { margin:0; }
+.inline { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; } .inline label { margin:4px 0; }
+.pager { display:flex; gap:10px; align-items:center; justify-content:flex-end; font-size:12px; margin-top:8px; }
+.login { max-width:420px; margin:8vh auto; padding:0 16px; } .login form { display:flex; flex-direction:column; } .login input { width:100%; }
+.login h1 { font-size:22px; }
+.demo h2 { font-size:14px; margin:0 0 10px; }
+.demo-list { display:grid; gap:8px; }
+.demo-item { display:grid; grid-template-columns:1fr auto; gap:2px 12px; text-align:left; padding:10px 12px; border:1px solid var(--line, #d9dee5); border-radius:8px; background:#fff; font:inherit; cursor:pointer; }
+.demo-item:hover:not(:disabled) { border-color:var(--navy); background:#f4f6fb; }
+.demo-item:disabled { opacity:.6; cursor:wait; }
+.demo-item strong { grid-column:1; } .demo-item span { grid-column:1; color:var(--muted); font-size:12px; } .demo-item code { grid-column:2; grid-row:1; align-self:center; } .demo-item small { grid-column:1 / 3; color:var(--muted); font-size:11px; }

@@ -1,0 +1,550 @@
+Thử clone mới – 23/10/2026 17:59
+Nguồn: https://github.com/tanvu0202/smartcrm-mekong-mobile.git
+Thư mục thử: /d/smartcrm-2374802010573-smartcrm-mekong-mobile/../smartcrm-clone-thu
+
+=== Bước 1 – git clone
+$ git clone -b dev https://github.com/tanvu0202/smartcrm-mekong-mobile.git /d/smartcrm-2374802010573-smartcrm-mekong-mobile/../smartcrm-clone-thu
+Cloning into 'D:/smartcrm-2374802010573-smartcrm-mekong-mobile/../smartcrm-clone-thu'...
+    -> ĐẠT
+(đã chép .env từ thư mục làm việc – không commit)
+
+=== Bước 3 – cài thư viện backend + giao diện
+$ npm run install:all
+
+> install:all
+> npm install && cd src/frontend && npm install
+
+
+added 80 packages, and audited 81 packages in 1s
+
+29 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+added 65 packages, and audited 67 packages in 3s
+
+9 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+    -> ĐẠT
+
+=== Bước 4 – tạo database (nếu chưa có)
+$ npm run db:create
+
+> db:create
+> node src/backend/scripts/create-db.js
+
+◇ injected env (7) from .env
+Database "smartcrm" đã có – bỏ qua.
+    -> ĐẠT
+
+=== Bước 5 – tạo bảng và nạp dữ liệu
+$ npm run migrate
+
+> migrate
+> node src/backend/scripts/migrate.js
+
+◇ injected env (7) from .env
+bỏ qua  001_create_tables.sql (đã chạy)
+bỏ qua  002_seed_catalog.sql (đã chạy)
+    -> ĐẠT
+
+=== Bước 6 – chạy test
+$ npm test
+
+> test
+> node --test
+
+TAP version 13
+# Subtest: trạng thái: DA_PHAN_CONG → DANG_XU_LY thành công và ghi log DOI_TRANG_THAI
+ok 1 - trạng thái: DA_PHAN_CONG → DANG_XU_LY thành công và ghi log DOI_TRANG_THAI
+  ---
+  duration_ms: 2.1926
+  ...
+# Subtest: trạng thái: DANG_XU_LY → HOAN_TAT thành công
+ok 2 - trạng thái: DANG_XU_LY → HOAN_TAT thành công
+  ---
+  duration_ms: 0.296
+  ...
+# Subtest: trạng thái: chuyển thẳng DA_PHAN_CONG → HOAN_TAT bị từ chối "Phải chuyển qua Đang xử lý trước" (US05)
+ok 3 - trạng thái: chuyển thẳng DA_PHAN_CONG → HOAN_TAT bị từ chối "Phải chuyển qua Đang xử lý trước" (US05)
+  ---
+  duration_ms: 2.097
+  ...
+# Subtest: trạng thái: đi lùi, lặp lại, phiếu chưa phân công → 409 INVALID_TRANSITION (biên)
+ok 4 - trạng thái: đi lùi, lặp lại, phiếu chưa phân công → 409 INVALID_TRANSITION (biên)
+  ---
+  duration_ms: 0.6069
+  ...
+# Subtest: trạng thái: status lạ hoặc thiếu người thực hiện → 400; phiếu không tồn tại → 404
+ok 5 - trạng thái: status lạ hoặc thiếu người thực hiện → 400; phiếu không tồn tại → 404
+  ---
+  duration_ms: 0.9733
+  ...
+# Subtest: trạng thái: kỹ thuật viên không đổi được phiếu của người khác → 403
+ok 6 - trạng thái: kỹ thuật viên không đổi được phiếu của người khác → 403
+  ---
+  duration_ms: 0.6105
+  ...
+# Subtest: lịch hẹn: khung giờ trống → lưu
+ok 7 - lịch hẹn: khung giờ trống → lưu
+  ---
+  duration_ms: 3.1258
+  ...
+# Subtest: lịch hẹn: trùng khung giờ → 409 APPOINTMENT_OVERLAP và không lưu thêm (UC04 ngoại lệ)
+ok 8 - lịch hẹn: trùng khung giờ → 409 APPOINTMENT_OVERLAP và không lưu thêm (UC04 ngoại lệ)
+  ---
+  duration_ms: 0.7383
+  ...
+# Subtest: lịch hẹn: hai khung chỉ chạm đầu mút (10:00–11:00 sau 09:00–10:00) KHÔNG trùng (biên)
+ok 9 - lịch hẹn: hai khung chỉ chạm đầu mút (10:00–11:00 sau 09:00–10:00) KHÔNG trùng (biên)
+  ---
+  duration_ms: 0.6842
+  ...
+# Subtest: lịch hẹn: kết thúc trước hoặc bằng bắt đầu, loại lạ, thời điểm rác → 400 (không hợp lệ)
+ok 10 - lịch hẹn: kết thúc trước hoặc bằng bắt đầu, loại lạ, thời điểm rác → 400 (không hợp lệ)
+  ---
+  duration_ms: 0.9722
+  ...
+# Subtest: lịch hẹn: phiếu chưa phân công → 409 TICKET_NOT_ASSIGNED; đã hoàn tất → 409 TICKET_CLOSED; không có → 404
+ok 11 - lịch hẹn: phiếu chưa phân công → 409 TICKET_NOT_ASSIGNED; đã hoàn tất → 409 TICKET_CLOSED; không có → 404
+  ---
+  duration_ms: 0.7725
+  ...
+# Subtest: token: ký rồi kiểm tra lại được đúng dữ liệu (hợp lệ)
+ok 12 - token: ký rồi kiểm tra lại được đúng dữ liệu (hợp lệ)
+  ---
+  duration_ms: 2.5815
+  ...
+# Subtest: token: đúng thời điểm hết hạn thì bị từ chối (biên)
+ok 13 - token: đúng thời điểm hết hạn thì bị từ chối (biên)
+  ---
+  duration_ms: 1.5771
+  ...
+# Subtest: token: sửa nội dung hoặc ký bằng bí mật khác thì bị từ chối (không hợp lệ)
+ok 14 - token: sửa nội dung hoặc ký bằng bí mật khác thì bị từ chối (không hợp lệ)
+  ---
+  duration_ms: 0.4673
+  ...
+# Subtest: token: rác, rỗng, thiếu phần đều là TOKEN_INVALID (không hợp lệ)
+ok 15 - token: rác, rỗng, thiếu phần đều là TOKEN_INVALID (không hợp lệ)
+  ---
+  duration_ms: 0.5035
+  ...
+# Subtest: token: ttl không hợp lệ hoặc thiếu bí mật thì không ký (biên)
+ok 16 - token: ttl không hợp lệ hoặc thiếu bí mật thì không ký (biên)
+  ---
+  duration_ms: 0.3786
+  ...
+# Subtest: login: quản lý đúng mật khẩu → token + vai trò QUAN_LY, không có technicianId
+ok 17 - login: quản lý đúng mật khẩu → token + vai trò QUAN_LY, không có technicianId
+  ---
+  duration_ms: 313.6654
+  ...
+# Subtest: login: kỹ thuật viên → technicianId lấy từ CSDL, tên lấy từ bản ghi kỹ thuật viên
+ok 18 - login: kỹ thuật viên → technicianId lấy từ CSDL, tên lấy từ bản ghi kỹ thuật viên
+  ---
+  duration_ms: 302.5465
+  ...
+# Subtest: login: sai mật khẩu và tên không tồn tại cho cùng một lỗi 401 (không lộ tài khoản)
+ok 19 - login: sai mật khẩu và tên không tồn tại cho cùng một lỗi 401 (không lộ tài khoản)
+  ---
+  duration_ms: 384.9752
+  ...
+# Subtest: login: thiếu hoặc sai kiểu dữ liệu → 400, không phải 500
+ok 20 - login: thiếu hoặc sai kiểu dữ liệu → 400, không phải 500
+  ---
+  duration_ms: 232.5875
+  ...
+# Subtest: login: kỹ thuật viên đã nghỉ việc hoặc không còn trong CSDL → 401 ACCOUNT_DISABLED
+ok 21 - login: kỹ thuật viên đã nghỉ việc hoặc không còn trong CSDL → 401 ACCOUNT_DISABLED
+  ---
+  duration_ms: 629.2072
+  ...
+# Subtest: authenticate: Bearer hợp lệ → thông tin người dùng
+ok 22 - authenticate: Bearer hợp lệ → thông tin người dùng
+  ---
+  duration_ms: 303.2205
+  ...
+# Subtest: authenticate: thiếu header, sai dạng, token lạ → 401 UNAUTHENTICATED
+ok 23 - authenticate: thiếu header, sai dạng, token lạ → 401 UNAUTHENTICATED
+  ---
+  duration_ms: 228.4541
+  ...
+# Subtest: authenticate: token hết hạn → 401 TOKEN_EXPIRED (để giao diện đưa về trang đăng nhập)
+ok 24 - authenticate: token hết hạn → 401 TOKEN_EXPIRED (để giao diện đưa về trang đăng nhập)
+  ---
+  duration_ms: 305.2472
+  ...
+# Subtest: requireAuth: có token → gắn req.user; không có → chuyển lỗi 401
+ok 25 - requireAuth: có token → gắn req.user; không có → chuyển lỗi 401
+  ---
+  duration_ms: 323.7348
+  ...
+# Subtest: requireRole: đúng vai trò đi tiếp; sai vai trò hoặc chưa đăng nhập → 403
+ok 26 - requireRole: đúng vai trò đi tiếp; sai vai trò hoặc chưa đăng nhập → 403
+  ---
+  duration_ms: 0.3002
+  ...
+# Subtest: buildUrl: bỏ tham số rỗng/null/undefined, giữ 0 và mã hợp lệ (biên)
+ok 27 - buildUrl: bỏ tham số rỗng/null/undefined, giữ 0 và mã hợp lệ (biên)
+  ---
+  duration_ms: 2.7946
+  ...
+# Subtest: request: gắn Authorization khi đã đăng nhập, trả về JSON
+ok 28 - request: gắn Authorization khi đã đăng nhập, trả về JSON
+  ---
+  duration_ms: 2.4608
+  ...
+# Subtest: request: mất kết nối → ApiError NETWORK có thông báo tiếng Việt
+ok 29 - request: mất kết nối → ApiError NETWORK có thông báo tiếng Việt
+  ---
+  duration_ms: 0.9007
+  ...
+# Subtest: request: proxy trả 502 không phải JSON → SERVER_UNAVAILABLE, không văng lỗi cú pháp
+ok 30 - request: proxy trả 502 không phải JSON → SERVER_UNAVAILABLE, không văng lỗi cú pháp
+  ---
+  duration_ms: 0.5333
+  ...
+# Subtest: request: 401 khi đã đăng nhập → xóa token và báo cho ứng dụng đưa về trang đăng nhập
+ok 31 - request: 401 khi đã đăng nhập → xóa token và báo cho ứng dụng đưa về trang đăng nhập
+  ---
+  duration_ms: 0.8472
+  ...
+# Subtest: request: 401 ở trang đăng nhập (auth=false) là "sai mật khẩu", không xóa phiên, không chuyển trang
+ok 32 - request: 401 ở trang đăng nhập (auth=false) là "sai mật khẩu", không xóa phiên, không chuyển trang
+  ---
+  duration_ms: 0.5438
+  ...
+# Subtest: request: lỗi 409 từ backend giữ nguyên mã và thông báo để màn hình hiển thị
+ok 33 - request: lỗi 409 từ backend giữ nguyên mã và thông báo để màn hình hiển thị
+  ---
+  duration_ms: 0.4801
+  ...
+# Subtest: toTicket: đổi tên trường, ép ưu tiên về số, technician_id null giữ null (hợp lệ)
+ok 34 - toTicket: đổi tên trường, ép ưu tiên về số, technician_id null giữ null (hợp lệ)
+  ---
+  duration_ms: 1.1888
+  ...
+# Subtest: toTicket: thiếu trường bắt buộc → BAD_CONTRACT nêu tên trường, không để "undefined" lên màn hình
+ok 35 - toTicket: thiếu trường bắt buộc → BAD_CONTRACT nêu tên trường, không để "undefined" lên màn hình
+  ---
+  duration_ms: 0.9513
+  ...
+# Subtest: toTicket: null hoặc không phải object → BAD_CONTRACT (không hợp lệ)
+ok 36 - toTicket: null hoặc không phải object → BAD_CONTRACT (không hợp lệ)
+  ---
+  duration_ms: 0.2343
+  ...
+# Subtest: toSuggestion: số phiếu đang mở = 0 và tay nghề dạng chuỗi vẫn đọc đúng (biên)
+ok 37 - toSuggestion: số phiếu đang mở = 0 và tay nghề dạng chuỗi vẫn đọc đúng (biên)
+  ---
+  duration_ms: 0.208
+  ...
+# Subtest: toLog: log_id bigint dạng chuỗi được giữ nguyên chuỗi, lý do thiếu thành chuỗi rỗng
+ok 38 - toLog: log_id bigint dạng chuỗi được giữ nguyên chuỗi, lý do thiếu thành chuỗi rỗng
+  ---
+  duration_ms: 0.3382
+  ...
+# Subtest: listOf: lấy mảng trong { data }, thiếu data → BAD_CONTRACT
+ok 39 - listOf: lấy mảng trong { data }, thiếu data → BAD_CONTRACT
+  ---
+  duration_ms: 1.0408
+  ...
+# Subtest: toIsoRange: 09:00–10:00 hợp lệ → hai mốc ISO cách nhau đúng 1 giờ
+ok 40 - toIsoRange: 09:00–10:00 hợp lệ → hai mốc ISO cách nhau đúng 1 giờ
+  ---
+  duration_ms: 3.4137
+  ...
+# Subtest: toIsoRange: kết thúc bằng hoặc trước bắt đầu → lỗi tiếng Việt (biên)
+ok 41 - toIsoRange: kết thúc bằng hoặc trước bắt đầu → lỗi tiếng Việt (biên)
+  ---
+  duration_ms: 0.8364
+  ...
+# Subtest: toIsoRange: thiếu hoặc sai định dạng ngày / giờ → lỗi (không hợp lệ)
+ok 42 - toIsoRange: thiếu hoặc sai định dạng ngày / giờ → lỗi (không hợp lệ)
+  ---
+  duration_ms: 0.3478
+  ...
+# Subtest: tomorrow: cuối tháng và cuối năm chuyển đúng (biên)
+ok 43 - tomorrow: cuối tháng và cuối năm chuyển đúng (biên)
+  ---
+  duration_ms: 0.2605
+  ...
+# Subtest: contract: toAppointment đổi tên trường; thiếu trường → BAD_CONTRACT
+ok 44 - contract: toAppointment đổi tên trường; thiếu trường → BAD_CONTRACT
+  ---
+  duration_ms: 1.1053
+  ...
+# Subtest: contract: toTicket giữ appointment_start cho cột Lịch hẹn, thiếu thì null
+ok 45 - contract: toTicket giữ appointment_start cho cột Lịch hẹn, thiếu thì null
+  ---
+  duration_ms: 0.3966
+  ...
+# Subtest: demo: có đúng 3 nút (1 quản lý, 2 kỹ thuật viên) và mật khẩu mặc định demo123 (hợp lệ)
+ok 46 - demo: có đúng 3 nút (1 quản lý, 2 kỹ thuật viên) và mật khẩu mặc định demo123 (hợp lệ)
+  ---
+  duration_ms: 0.9905
+  ...
+# Subtest: demo: tên đăng nhập trên giao diện trùng đúng tài khoản backend, cùng tên hiển thị (khớp hai phía)
+ok 47 - demo: tên đăng nhập trên giao diện trùng đúng tài khoản backend, cùng tên hiển thị (khớp hai phía)
+  ---
+  duration_ms: 0.9342
+  ...
+# Subtest: demo: mỗi nút đủ tên, vai trò, tên đăng nhập; không trùng tên đăng nhập (không hợp lệ nếu thiếu)
+ok 48 - demo: mỗi nút đủ tên, vai trò, tên đăng nhập; không trùng tên đăng nhập (không hợp lệ nếu thiếu)
+  ---
+  duration_ms: 0.2851
+  ...
+# Subtest: overview: đếm phiếu phát sinh trong ngày (hợp lệ)
+ok 49 - overview: đếm phiếu phát sinh trong ngày (hợp lệ)
+  ---
+  duration_ms: 2.5839
+  ...
+# Subtest: overview: mốc nửa đêm: 00:00 hôm nay tính, 23:59 hôm qua không tính (biên)
+ok 50 - overview: mốc nửa đêm: 00:00 hôm nay tính, 23:59 hôm qua không tính (biên)
+  ---
+  duration_ms: 0.2628
+  ...
+# Subtest: overview: đúng 4 giờ đến hạn tính là "còn ≤ 4 giờ", 4 giờ 1 phút thì không; quá hạn có tính (biên)
+ok 51 - overview: đúng 4 giờ đến hạn tính là "còn ≤ 4 giờ", 4 giờ 1 phút thì không; quá hạn có tính (biên)
+  ---
+  duration_ms: 0.4835
+  ...
+# Subtest: overview: phiếu HOAN_TAT không tính quá hạn và không tính là phiếu đang mở
+ok 52 - overview: phiếu HOAN_TAT không tính quá hạn và không tính là phiếu đang mở
+  ---
+  duration_ms: 0.2122
+  ...
+# Subtest: overview: số phiếu mở theo từng kỹ thuật viên; KTV chưa có phiếu hiện 0; phiếu chưa giao không tính
+ok 53 - overview: số phiếu mở theo từng kỹ thuật viên; KTV chưa có phiếu hiện 0; phiếu chưa giao không tính
+  ---
+  duration_ms: 1.1615
+  ...
+# Subtest: overview: danh sách rỗng và ngày giờ hỏng không làm văng lỗi (không hợp lệ)
+ok 54 - overview: danh sách rỗng và ngày giờ hỏng không làm văng lỗi (không hợp lệ)
+  ---
+  duration_ms: 0.2438
+  ...
+# Subtest: paginate: 45 dòng, 20 dòng/trang → 3 trang; trang cuối còn 5 dòng
+ok 55 - paginate: 45 dòng, 20 dòng/trang → 3 trang; trang cuối còn 5 dòng
+  ---
+  duration_ms: 0.3492
+  ...
+# Subtest: paginate: đúng 20 dòng chỉ 1 trang; 21 dòng thành 2 trang (biên)
+ok 56 - paginate: đúng 20 dòng chỉ 1 trang; 21 dòng thành 2 trang (biên)
+  ---
+  duration_ms: 0.1609
+  ...
+# Subtest: paginate: rỗng → 1 trang; trang vượt phạm vi hoặc rác được kẹp về trang hợp lệ (không hợp lệ)
+ok 57 - paginate: rỗng → 1 trang; trang vượt phạm vi hoặc rác được kẹp về trang hợp lệ (không hợp lệ)
+  ---
+  duration_ms: 0.5507
+  ...
+# Subtest: matchRoute: khớp các trang và lấy tham số :id
+ok 58 - matchRoute: khớp các trang và lấy tham số :id
+  ---
+  duration_ms: 3.9868
+  ...
+# Subtest: matchRoute: dấu / thừa, hash rỗng, đường dẫn lạ → notfound (biên)
+ok 59 - matchRoute: dấu / thừa, hash rỗng, đường dẫn lạ → notfound (biên)
+  ---
+  duration_ms: 0.4864
+  ...
+# Subtest: homeFor: KTV vào Phiếu của tôi, quản lý vào danh sách
+ok 60 - homeFor: KTV vào Phiếu của tôi, quản lý vào danh sách
+  ---
+  duration_ms: 0.2934
+  ...
+# Subtest: formatDateTime: giờ hợp lệ có dạng dd/mm/yyyy hh:mm; null và chuỗi rác → "—", không "Invalid Date"
+ok 61 - formatDateTime: giờ hợp lệ có dạng dd/mm/yyyy hh:mm; null và chuỗi rác → "—", không "Invalid Date"
+  ---
+  duration_ms: 1.8973
+  ...
+# Subtest: isOverdue: đúng mốc hạn chưa quá hạn; thiếu hạn không bị coi là quá hạn (biên)
+ok 62 - isOverdue: đúng mốc hạn chưa quá hạn; thiếu hạn không bị coi là quá hạn (biên)
+  ---
+  duration_ms: 0.3368
+  ...
+# Subtest: nhãn: mã lạ được trả lại nguyên văn thay vì "undefined"
+ok 63 - nhãn: mã lạ được trả lại nguyên văn thay vì "undefined"
+  ---
+  duration_ms: 0.1847
+  ...
+# Subtest: đang tải → loading, kể cả khi đã có dữ liệu cũ (tải lại)
+ok 64 - đang tải → loading, kể cả khi đã có dữ liệu cũ (tải lại)
+  ---
+  duration_ms: 1.0857
+  ...
+# Subtest: có lỗi → error, ưu tiên hơn empty (backend sập không được hiện "chưa có phiếu")
+ok 65 - có lỗi → error, ưu tiên hơn empty (backend sập không được hiện "chưa có phiếu")
+  ---
+  duration_ms: 0.1856
+  ...
+# Subtest: mảng rỗng / null → empty (biên)
+ok 66 - mảng rỗng / null → empty (biên)
+  ---
+  duration_ms: 0.1605
+  ...
+# Subtest: có dữ liệu → ready; đối tượng đơn lẻ không bị coi là rỗng
+ok 67 - có dữ liệu → ready; đối tượng đơn lẻ không bị coi là rỗng
+  ---
+  duration_ms: 1.1097
+  ...
+# Subtest: isEmpty tùy biến được dùng khi truyền vào
+ok 68 - isEmpty tùy biến được dùng khi truyền vào
+  ---
+  duration_ms: 0.3834
+  ...
+# Subtest: lịch hẹn: trùng giờ giữa HAI PHIẾU của cùng kỹ thuật viên bị chặn, chạm đầu mút thì được
+ok 69 - lịch hẹn: trùng giờ giữa HAI PHIẾU của cùng kỹ thuật viên bị chặn, chạm đầu mút thì được # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 1.0655
+  ...
+# Subtest: lịch hẹn: 2 yêu cầu đặt ĐỒNG THỜI cùng khung giờ cho một kỹ thuật viên: đúng 1 thành công
+ok 70 - lịch hẹn: 2 yêu cầu đặt ĐỒNG THỜI cùng khung giờ cho một kỹ thuật viên: đúng 1 thành công # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 0.1392
+  ...
+# Subtest: trạng thái: vòng đời đầy đủ trên CSDL thật và log ghi đúng
+ok 71 - trạng thái: vòng đời đầy đủ trên CSDL thật và log ghi đúng # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 0.1116
+  ...
+# Subtest: 2 yêu cầu phân công đồng thời: 1 thành công, 1 bị 409, log đúng 1 dòng
+ok 72 - 2 yêu cầu phân công đồng thời: 1 thành công, 1 bị 409, log đúng 1 dòng # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 1.0746
+  ...
+# Subtest: 2 yêu cầu ĐỔI KTV đồng thời cho cùng một phiếu: kết quả cuối nhất quán, log khớp
+ok 73 - 2 yêu cầu ĐỔI KTV đồng thời cho cùng một phiếu: kết quả cuối nhất quán, log khớp # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 0.1514
+  ...
+# Subtest: findCandidates: cùng trung tâm, tay nghề ≥ 3, đúng nhóm sự cố, đang hoạt động
+ok 74 - findCandidates: cùng trung tâm, tay nghề ≥ 3, đúng nhóm sự cố, đang hoạt động # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 1.0913
+  ...
+# Subtest: findCandidates: không có KTV phù hợp trả mảng rỗng (ngoại lệ 4a UC01)
+ok 75 - findCandidates: không có KTV phù hợp trả mảng rỗng (ngoại lệ 4a UC01) # SKIP cần TEST_DATABASE_URL
+  ---
+  duration_ms: 0.1751
+  ...
+# Subtest: phân công lần đầu: MOI -> DA_PHAN_CONG và ghi log PHAN_CONG (QT-01, NFR05)
+ok 76 - phân công lần đầu: MOI -> DA_PHAN_CONG và ghi log PHAN_CONG (QT-01, NFR05)
+  ---
+  duration_ms: 2.1017
+  ...
+# Subtest: KTV khác trung tâm bị từ chối 422 (QT-03)
+ok 77 - KTV khác trung tâm bị từ chối 422 (QT-03)
+  ---
+  duration_ms: 2.2379
+  ...
+# Subtest: gán lại đúng KTV hiện tại bị 409 (QT-02)
+ok 78 - gán lại đúng KTV hiện tại bị 409 (QT-02)
+  ---
+  duration_ms: 0.3528
+  ...
+# Subtest: đổi KTV không có lý do bị 400 (QT-04)
+ok 79 - đổi KTV không có lý do bị 400 (QT-04)
+  ---
+  duration_ms: 0.3018
+  ...
+# Subtest: đổi KTV phiếu DANG_XU_LY cần confirm=true (QT-04)
+ok 80 - đổi KTV phiếu DANG_XU_LY cần confirm=true (QT-04)
+  ---
+  duration_ms: 0.4696
+  ...
+# Subtest: phiếu HOAN_TAT không phân công được (QT-01)
+ok 81 - phiếu HOAN_TAT không phân công được (QT-01)
+  ---
+  duration_ms: 0.2328
+  ...
+# Subtest: KTV đã có 9 phiếu mở: vẫn gán được nhưng có cảnh báo (QT-06)
+ok 82 - KTV đã có 9 phiếu mở: vẫn gán được nhưng có cảnh báo (QT-06)
+  ---
+  duration_ms: 0.353
+  ...
+# Subtest: KTV có 3 phiếu mở: không cảnh báo
+ok 83 - KTV có 3 phiếu mở: không cảnh báo
+  ---
+  duration_ms: 0.3487
+  ...
+# Subtest: phiếu không tồn tại -> 404
+ok 84 - phiếu không tồn tại -> 404
+  ---
+  duration_ms: 0.7347
+  ...
+# Subtest: đề xuất đánh dấu overloaded theo ngưỡng 10
+ok 85 - đề xuất đánh dấu overloaded theo ngưỡng 10
+  ---
+  duration_ms: 1.1046
+  ...
+# Subtest: tạo phiếu thiếu trường / sai priority -> 400
+ok 86 - tạo phiếu thiếu trường / sai priority -> 400
+  ---
+  duration_ms: 0.7746
+  ...
+# Subtest: tạo phiếu hợp lệ sinh mã BH-xxxx
+ok 87 - tạo phiếu hợp lệ sinh mã BH-xxxx
+  ---
+  duration_ms: 2.2844
+  ...
+# Subtest: chỉ sửa/xóa được phiếu MOI
+ok 88 - chỉ sửa/xóa được phiếu MOI
+  ---
+  duration_ms: 0.7238
+  ...
+# Subtest: phân công lần đầu cho phiếu đã có KTV -> 409 TICKET_ALREADY_ASSIGNED (UC01 5b)
+ok 89 - phân công lần đầu cho phiếu đã có KTV -> 409 TICKET_ALREADY_ASSIGNED (UC01 5b)
+  ---
+  duration_ms: 0.2676
+  ...
+# Subtest: đổi KTV cho phiếu chưa có KTV -> 409 TICKET_NOT_ASSIGNED
+ok 90 - đổi KTV cho phiếu chưa có KTV -> 409 TICKET_NOT_ASSIGNED
+  ---
+  duration_ms: 0.3866
+  ...
+1..90
+# tests 90
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 7
+# todo 0
+# duration_ms 3250.6225
+    -> ĐẠT
+
+=== Bước 7 – chạy backend và kiểm tra
+◇ injected env (6) from .env
+Mekong L4 API chạy tại http://localhost:3999
+    -> /api/health: ok
+    -> đăng nhập dieu.phoi: ok
+    -> không có token: 401 (đúng)
+
+=== Bước 8 – dựng giao diện (vite build)
+
+> web:build
+> npm --prefix src/frontend run build
+
+
+> smartcrm-mekong-frontend@0.2.0 build
+> vite build
+
+[36mvite v6.4.5 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 49 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.45 kB[22m[1m[22m[2m │ gzip:  0.32 kB[22m
+[2mdist/[22m[35massets/index-BiLZ-veS.css  [39m[1m[2m  5.46 kB[22m[1m[22m[2m │ gzip:  1.84 kB[22m
+[2mdist/[22m[36massets/index-CARRL6JF.js   [39m[1m[2m258.58 kB[22m[1m[22m[2m │ gzip: 79.78 kB[22m
+[32m✓ built in 1.45s[39m
+    -> ĐẠT
+
+KẾT QUẢ: clone mới dựng được hệ thống theo README. Chụp màn hình cửa sổ này lưu vào docs/ket-qua-chay/.
+Muốn xem giao diện trên bản clone này:  cd "/d/smartcrm-2374802010573-smartcrm-mekong-mobile/../smartcrm-clone-thu" && npm start   (cửa sổ 1)  ·  npm run web   (cửa sổ 2)

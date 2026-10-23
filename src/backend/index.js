@@ -1,43 +1,26 @@
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
-const express = require('express');
-const mongoose = require('mongoose');
+const config = require('./src/config');
+const { pool, withTransaction } = require('./src/db');
+const ticketRepo = require('./src/repositories/ticketRepository');
+const technicianRepo = require('./src/repositories/technicianRepository');
+const centerRepo = require('./src/repositories/centerRepository');
+const logRepo = require('./src/repositories/ticketLogRepository');
+const appointmentRepo = require('./src/repositories/appointmentRepository');
+const { createTicketService } = require('./src/services/ticketService');
+const { createAuthService } = require('./src/services/authService');
+const { DEMO_ACCOUNTS, buildUsers } = require('./src/auth/users');
+const { createApp } = require('./src/app');
 
-const app = express();
-const port = process.env.APP_PORT || 3000;
-const mongoUri = process.env.MONGODB_URI;
-
-// Endpoint 1: Hello Smart CRM
-app.get('/', (req, res) => {
-  res.send('Hello Smart CRM');
+const ticketService = createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, appointmentRepo, db: pool, withTransaction, config });
+const authService = createAuthService({
+  users: buildUsers(DEMO_ACCOUNTS, config.auth.demoPassword),
+  secret: config.auth.secret,
+  ttlSeconds: config.auth.tokenTtlSeconds,
+  technicianRepo,
+  db: pool,
 });
+const app = createApp({ ticketService, authService, checkDb: () => pool.query('SELECT 1'), corsOrigins: config.corsOrigins });
 
-// Endpoint 2: Kiểm tra kết nối CSDL MongoDB
-app.get('/db-check', (req, res) => {
-  const state = mongoose.connection.readyState;
-  if (state === 1) {
-    res.json({
-      status: 'OK',
-      database: 'MongoDB Atlas',
-      server_time: new Date()
-    });
-  } else {
-    res.status(500).json({
-      status: 'ERROR',
-      message: 'MongoDB chưa kết nối thành công (State: ' + state + ')'
-    });
-  }
+app.listen(config.port, () => {
+  console.log(`Mekong L4 API chạy tại http://localhost:${config.port}`);
+  if (!config.auth.secretFromEnv) console.log('Lưu ý: chưa đặt AUTH_SECRET trong .env – token sẽ mất hiệu lực mỗi lần khởi động lại.');
 });
-
-// Kết nối MongoDB trước, kết nối được mới bật Server
-console.log('Dang ket noi toi MongoDB...');
-mongoose.connect(mongoUri)
-  .then(() => {
-    console.log('Da ket noi thanh cong toi MongoDB Atlas!');
-    app.listen(port, () => {
-      console.log('Server chay tai http://localhost:' + port);
-    });
-  })
-  .catch((err) => {
-    console.error('Loi ket noi MongoDB:', err.message);
-  });

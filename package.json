@@ -1,5 +1,17 @@
 {
+  "scripts": {
+    "start": "node src/backend/index.js",
+    "migrate": "node src/backend/scripts/migrate.js",
+    "test": "node --test",
+    "db:create": "node src/backend/scripts/create-db.js",
+    "install:all": "npm install && cd src/frontend && npm install",
+    "web": "npm --prefix src/frontend run dev",
+    "web:build": "npm --prefix src/frontend run build",
+    "test:full": "node scripts/chay-test-day-du.js"
+  },
   "dependencies": {
-    "mongoose": "^9.10.2"
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
   }
 }

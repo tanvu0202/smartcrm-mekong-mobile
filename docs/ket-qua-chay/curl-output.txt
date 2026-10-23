@@ -1,0 +1,35 @@
+# Phiếu thử: 9 · KTV đề xuất đầu bảng: 3
+
+$ curl http://localhost:3000/api/health
+{"status":"ok","db":"up"}
+HTTP 200
+
+$ curl http://localhost:3000/api/tickets?status=MOI
+{"data":[{"ticket_id":9,"ticket_code":"BH-0009","center_id":1,"technician_id":null,"customer_name":"Khach Demo","customer_phone":"0912999999","device_model":"iPhone 13","issue_group":"MAN_HINH","issue_description":"Vo man hinh","priority":1,"status":"MOI","due_date":"2026-10-21T13:18:15.325Z","created_at":"2026-10-19T13:18:15.724Z"}]}
+HTTP 200
+
+$ curl http://localhost:3000/api/tickets/9/suggestions
+{"data":[{"technician_id":3,"full_name":"Lê Phúc","phone":"0901000001","proficiency":5,"open_tickets":2,"overloaded":false},{"technician_id":2,"full_name":"Nguyễn Hải","phone":"0901000002","proficiency":4,"open_tickets":0,"overloaded":false},{"technician_id":1,"full_name":"Trần Long","phone":"0901000003","proficiency":3,"open_tickets":0,"overloaded":false}]}
+HTTP 200
+
+$ curl -X POST http://localhost:3000/api/tickets/9/assign -H Content-Type: application/json -d {"technicianId":3,"changedBy":"dieu.phoi"}
+{"ticket":{"ticket_id":9,"ticket_code":"BH-0009","center_id":1,"technician_id":3,"customer_name":"Khach Demo","customer_phone":"0912999999","device_model":"iPhone 13","issue_group":"MAN_HINH","issue_description":"Vo man hinh","priority":1,"status":"DA_PHAN_CONG","due_date":"2026-10-21T13:18:15.325Z","created_at":"2026-10-19T13:18:15.724Z"},"log":{"log_id":"13","ticket_id":9,"action":"PHAN_CONG","old_technician_id":null,"new_technician_id":3,"old_status":"MOI","new_status":"DA_PHAN_CONG","reason":null,"changed_by":"dieu.phoi","changed_at":"2026-10-19T13:18:16.954Z"},"warnings":[]}
+HTTP 200
+
+# Ba kết quả mong đợi: 409 phân công lại phiếu đã có KTV · 400 đổi KTV không có lý do · 200 đổi KTV có lý do
+
+$ curl -X POST http://localhost:3000/api/tickets/9/assign -H Content-Type: application/json -d {"technicianId":2,"changedBy":"dieu.phoi"}
+{"error":{"code":"TICKET_ALREADY_ASSIGNED","message":"Phiếu đã được phân công (có thể do người khác vừa thực hiện); dùng đổi kỹ thuật viên nếu cần"}}
+HTTP 409
+
+$ curl -X POST http://localhost:3000/api/tickets/9/reassign -H Content-Type: application/json -d {"technicianId":2,"changedBy":"dieu.phoi"}
+{"error":{"code":"VALIDATION_ERROR","message":"Đổi kỹ thuật viên bắt buộc nhập lý do"}}
+HTTP 400
+
+$ curl -X POST http://localhost:3000/api/tickets/9/reassign -H Content-Type: application/json -d {"technicianId":2,"changedBy":"dieu.phoi","reason":"KTV cu nghi om"}
+{"ticket":{"ticket_id":9,"ticket_code":"BH-0009","center_id":1,"technician_id":2,"customer_name":"Khach Demo","customer_phone":"0912999999","device_model":"iPhone 13","issue_group":"MAN_HINH","issue_description":"Vo man hinh","priority":1,"status":"DA_PHAN_CONG","due_date":"2026-10-21T13:18:15.325Z","created_at":"2026-10-19T13:18:15.724Z"},"log":{"log_id":"14","ticket_id":9,"action":"DOI_KTV","old_technician_id":3,"new_technician_id":2,"old_status":"DA_PHAN_CONG","new_status":"DA_PHAN_CONG","reason":"KTV cu nghi om","changed_by":"dieu.phoi","changed_at":"2026-10-19T13:18:17.155Z"},"warnings":[]}
+HTTP 200
+
+$ curl http://localhost:3000/api/tickets/9/history
+{"data":[{"log_id":"13","ticket_id":9,"action":"PHAN_CONG","old_technician_id":null,"new_technician_id":3,"old_status":"MOI","new_status":"DA_PHAN_CONG","reason":null,"changed_by":"dieu.phoi","changed_at":"2026-10-19T13:18:16.954Z"},{"log_id":"14","ticket_id":9,"action":"DOI_KTV","old_technician_id":3,"new_technician_id":2,"old_status":"DA_PHAN_CONG","new_status":"DA_PHAN_CONG","reason":"KTV cu nghi om","changed_by":"dieu.phoi","changed_at":"2026-10-19T13:18:17.155Z"}]}
+HTTP 200

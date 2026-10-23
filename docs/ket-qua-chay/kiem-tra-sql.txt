@@ -1,0 +1,41 @@
+== 1. Đề xuất KTV cho phiếu BH-0001 (Quận 1, MAN_HINH, tay nghề >= 3) – SQL của technicianRepository.findCandidates
+ technician_id | full_name  | proficiency | open_tickets 
+---------------+------------+-------------+--------------
+             3 | Lê Phúc    |           5 |            0
+             2 | Nguyễn Hải |           4 |            0
+             1 | Trần Long  |           3 |            0
+(3 rows)
+
+== 2. Phân công (1 transaction): MOI -> DA_PHAN_CONG + ghi ticket_log
+BEGIN
+ ticket_id | status 
+-----------+--------
+         2 | MOI
+(1 row)
+
+UPDATE 1
+INSERT 0 1
+COMMIT
+ ticket_code | technician_id |    status    
+-------------+---------------+--------------
+ BH-0001     |             1 | DA_PHAN_CONG
+(1 row)
+
+  action   | old_status |  new_status  | new_technician_id | changed_by 
+-----------+------------+--------------+-------------------+------------
+ PHAN_CONG | MOI        | DA_PHAN_CONG |                 1 | dieu.phoi
+(1 row)
+
+== 3. Ràng buộc DB chặn dữ liệu sai (mong đợi 3 lỗi)
+psql:../check.sql:17: ERROR:  new row for relation "ticket" violates check constraint "ticket_check"
+DETAIL:  Failing row contains (2, BH-0001, 1, null, Nguyễn Văn Hòa, 0912000001, iPhone 13, MAN_HINH, Vỡ màn hình, cảm ứng không nhạy, 1, DA_PHAN_CONG, 2026-10-19 13:17:18.026049+00, 2026-10-19 07:17:18.026049+00).
+psql:../check.sql:18: ERROR:  new row for relation "ticket_log" violates check constraint "ticket_log_check"
+DETAIL:  Failing row contains (2, 1, DOI_KTV, 1, 2, null, null, null, x, 2026-10-19 07:17:26.637568+00).
+psql:../check.sql:19: ERROR:  new row for relation "ticket" violates check constraint "ticket_priority_check"
+DETAIL:  Failing row contains (1, BH-0002, 1, null, Lê Thị Mai, 0912000002, Galaxy S22, PIN, Pin chai, tụt nhanh, 9, MOI, 2026-10-20 13:17:18.026049+00, 2026-10-19 07:17:18.026049+00).
+== 4. Sinh mã phiếu kế tiếp
+ ma_ke_tiep 
+------------
+ BH-0004
+(1 row)
+
