@@ -8,13 +8,13 @@ set -u
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 URL="${1:-$(git -C "$SRC" remote get-url origin)}"
 DEST="${2:-$SRC/../smartcrm-clone-thu}"
-LOG="$SRC/docs/ket-qua-chay/thu-clone-moi.txt"
+FINAL_LOG="$SRC/docs/ket-qua-chay/thu-clone-moi.txt"; LOG="$(mktemp)"
 PORT_THU=3999
 mkdir -p "$(dirname "$LOG")"
 : > "$LOG"
 say() { echo "$@" | tee -a "$LOG"; }
 BACKEND_PID=""
-cleanup() { [ -n "$BACKEND_PID" ] && kill "$BACKEND_PID" 2>/dev/null; }
+cleanup() { cp "$LOG" "$FINAL_LOG" 2>/dev/null; [ -n "$BACKEND_PID" ] && kill "$BACKEND_PID" 2>/dev/null; }
 trap cleanup EXIT
 
 step() { # step "<tên bước theo README>" <lệnh...>

@@ -16,13 +16,13 @@ Phiếu bảo hành ở trạng thái "Mới" → Quản lý phân công kỹ th
 
 ## 2. Yêu cầu môi trường
 
-| Thành phần | Phiên bản | Ghi chú |
-|---|---|---|
-| Node.js | ≥ 20 (đã thử 22) | `node -v` |
-| npm | ≥ 10 | `npm -v` |
-| PostgreSQL | 16 | đang chạy; biết tên người dùng và mật khẩu |
-| Git | | `git --version` |
-| Trình duyệt | Chrome / Edge mới | để mở giao diện |
+| Thành phần  | Phiên bản         | Ghi chú                                    |
+| ----------- | ----------------- | ------------------------------------------ |
+| Node.js     | ≥ 20 (đã thử 22)  | `node -v`                                  |
+| npm         | ≥ 10              | `npm -v`                                   |
+| PostgreSQL  | 16                | đang chạy; biết tên người dùng và mật khẩu |
+| Git         |                   | `git --version`                            |
+| Trình duyệt | Chrome / Edge mới | để mở giao diện                            |
 
 Cổng dùng: **3000** (backend), **5173** (giao diện). Không cần cài `psql` hay `createdb`: bước tạo database dùng Node.
 
@@ -30,31 +30,31 @@ Cổng dùng: **3000** (backend), **5173** (giao diện). Không cần cài `psq
 
 Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell chỉ khác bước 2 (`Copy-Item .env.example .env`).
 
-| Bước | Lệnh | Kết quả mong đợi |
-|---|---|---|
-| 1 | `git clone https://github.com/tanvu0202/smartcrm-mekong-mobile.git && cd smartcrm-mekong-mobile` | Có thư mục dự án |
-| 2 | `cp .env.example .env` rồi mở `.env` điền `DB_USER`, `DB_PASSWORD`, `AUTH_SECRET` (một chuỗi dài bất kỳ) | Có file `.env` (đã bị git bỏ qua, **không commit**) |
-| 3 | `npm run install:all` | Cài thư viện cho backend và giao diện, không báo `ERR!` |
-| 4 | `npm run db:create` | `Đã tạo database "smartcrm"` (hoặc `đã có – bỏ qua`) |
-| 5 | `npm run migrate` | `đã chạy 001_…`, `đã chạy 002_…` (chạy lại thì `bỏ qua`) |
-| 6 | `npm test` | `pass 83`, `fail 0` (7 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
-| 7 | `npm start` (cửa sổ terminal 1) | `Mekong L4 API chạy tại http://localhost:3000` |
-| 8 | `npm run web` (cửa sổ terminal 2) | Mở http://localhost:5173 → trang Đăng nhập |
+| Bước | Lệnh                                                                                                     | Kết quả mong đợi                                                                   |
+| ---- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 1    | `git clone https://github.com/tanvu0202/smartcrm-mekong-mobile.git && cd smartcrm-mekong-mobile`         | Có thư mục dự án                                                                   |
+| 2    | `cp .env.example .env` rồi mở `.env` điền `DB_USER`, `DB_PASSWORD`, `AUTH_SECRET` (một chuỗi dài bất kỳ) | Có file `.env` (đã bị git bỏ qua, **không commit**)                                |
+| 3    | `npm run install:all`                                                                                    | Cài thư viện cho backend và giao diện, không báo `ERR!`                            |
+| 4    | `npm run db:create`                                                                                      | `Đã tạo database "smartcrm"` (hoặc `đã có – bỏ qua`)                               |
+| 5    | `npm run migrate`                                                                                        | `đã chạy 001_…`, `đã chạy 002_…` (chạy lại thì `bỏ qua`)                           |
+| 6    | `npm test`                                                                                               | `pass 83`, `fail 0` (7 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
+| 7    | `npm start` (cửa sổ terminal 1)                                                                          | `Mekong L4 API chạy tại http://localhost:3000`                                     |
+| 8    | `npm run web` (cửa sổ terminal 2)                                                                        | Mở http://localhost:5173 → trang Đăng nhập                                         |
 
 **Tài khoản demo** (mật khẩu chung `demo123`, đổi bằng `DEMO_PASSWORD` trong `.env`). Trang Đăng nhập có sẵn ba nút tài khoản demo: bấm một nút là đăng nhập luôn, không cần gõ gì:
 
-| Tên đăng nhập | Vai trò | Thấy gì |
-|---|---|---|
-| `dieu.phoi` | Quản lý | M1 phiếu chờ phân công · M2 phân công và lịch hẹn · M3 xem theo từng kỹ thuật viên (chỉ xem) |
+| Tên đăng nhập         | Vai trò       | Thấy gì                                                                                            |
+| --------------------- | ------------- | -------------------------------------------------------------------------------------------------- |
+| `dieu.phoi`           | Quản lý       | M1 phiếu chờ phân công · M2 phân công và lịch hẹn · M3 xem theo từng kỹ thuật viên (chỉ xem)       |
 | `ktv.hai`, `ktv.long` | Kỹ thuật viên | Chỉ M3 "Phiếu của tôi" và nút chuyển trạng thái (server chỉ trả và chỉ cho đổi phiếu của chính họ) |
 
 **Thử nhanh các tình huống chính:**
 
-- Ở trang Đăng nhập bấm nút **Điều phối viên** → M1 → bấm *Phân công* ở một phiếu → chọn kỹ thuật viên đề xuất → *Xác nhận phân công*.
-- Vẫn ở M2: phiếu đã phân công vẫn hiện bảng *Đề xuất kỹ thuật viên thay thế* (bỏ người đang phụ trách); chọn một dòng sẽ điền vào ô "Kỹ thuật viên mới", nhập lý do → *Lưu*; lịch sử hiện thêm một dòng.
-- Vẫn ở M2: khối *Đặt lịch hẹn giao – nhận máy* → chọn loại, ngày, giờ → *Đặt lịch hẹn*; đặt tiếp một lịch chồng giờ của cùng kỹ thuật viên → thông báo trùng lịch, không lưu.
-- Đăng xuất, bấm nút **Nguyễn Hải** (`ktv.hai`) → thấy phiếu vừa giao kèm giờ lịch hẹn → *Bắt đầu xử lý* → *Hoàn tất*; bấm nút **Trần Long** (`ktv.long`, chưa có phiếu) → trạng thái rỗng.
-- Tắt backend (Ctrl+C ở terminal 1) rồi bấm *Tải lại* → thông báo lỗi kèm nút *Thử lại*; bật lại backend, bấm *Thử lại* → dữ liệu hiện lại.
+- Ở trang Đăng nhập bấm nút **Điều phối viên** → M1 → bấm _Phân công_ ở một phiếu → chọn kỹ thuật viên đề xuất → _Xác nhận phân công_.
+- Vẫn ở M2: phiếu đã phân công vẫn hiện bảng _Đề xuất kỹ thuật viên thay thế_ (bỏ người đang phụ trách); chọn một dòng sẽ điền vào ô "Kỹ thuật viên mới", nhập lý do → _Lưu_; lịch sử hiện thêm một dòng.
+- Vẫn ở M2: khối _Đặt lịch hẹn giao – nhận máy_ → chọn loại, ngày, giờ → _Đặt lịch hẹn_; đặt tiếp một lịch chồng giờ của cùng kỹ thuật viên → thông báo trùng lịch, không lưu.
+- Đăng xuất, bấm nút **Nguyễn Hải** (`ktv.hai`) → thấy phiếu vừa giao kèm giờ lịch hẹn → _Bắt đầu xử lý_ → _Hoàn tất_; bấm nút **Trần Long** (`ktv.long`, chưa có phiếu) → trạng thái rỗng.
+- Tắt backend (Ctrl+C ở terminal 1) rồi bấm _Tải lại_ → thông báo lỗi kèm nút _Thử lại_; bật lại backend, bấm _Thử lại_ → dữ liệu hiện lại.
 - Khởi động lại backend khi đang đăng nhập mà `AUTH_SECRET` đổi → lần gọi kế tiếp nhận 401, giao diện xóa token và về trang Đăng nhập.
 
 **Kiểm chứng bước 1–8 trên một thư mục clone mới:** `bash scripts/thu-clone-moi.sh` (clone từ GitHub vào thư mục khác, làm lần lượt các bước trên, ghi `docs/ket-qua-chay/thu-clone-moi.txt`).
@@ -65,21 +65,21 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 
 **Lỗi thường gặp:**
 
-| Triệu chứng | Cách xử lý |
-|---|---|
-| `password authentication failed` ở bước 4 hoặc 5 | `DB_USER` / `DB_PASSWORD` trong `.env` sai |
-| `EADDRINUSE :::3000` ở bước 7 | cổng 3000 đang bị chiếm: tắt backend cũ hoặc đặt `PORT=3001` trong `.env` (và `VITE_API_PROXY=http://localhost:3001` trong `src/frontend/.env`) |
-| Giao diện báo "Không kết nối được máy chủ" | backend chưa chạy (bước 7) |
-| Bị đưa về trang Đăng nhập sau khi khởi động lại backend | chưa đặt `AUTH_SECRET` trong `.env` nên mỗi lần khởi động token cũ mất hiệu lực |
+| Triệu chứng                                             | Cách xử lý                                                                                                                                      |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `password authentication failed` ở bước 4 hoặc 5        | `DB_USER` / `DB_PASSWORD` trong `.env` sai                                                                                                      |
+| `EADDRINUSE :::3000` ở bước 7                           | cổng 3000 đang bị chiếm: tắt backend cũ hoặc đặt `PORT=3001` trong `.env` (và `VITE_API_PROXY=http://localhost:3001` trong `src/frontend/.env`) |
+| Giao diện báo "Không kết nối được máy chủ"              | backend chưa chạy (bước 7)                                                                                                                      |
+| Bị đưa về trang Đăng nhập sau khi khởi động lại backend | chưa đặt `AUTH_SECRET` trong `.env` nên mỗi lần khởi động token cũ mất hiệu lực                                                                 |
 
 ## 4. Công nghệ và cấu trúc thư mục
 
-| Thành phần | Công nghệ |
-|---|---|
-| Backend | Node.js + Express, `pg` (không dùng ORM), `dotenv`; token đăng nhập dựng bằng `node:crypto` (HS256) |
-| Frontend | ReactJS 19 + Vite 6, bộ định tuyến theo hash tự viết (không thêm thư viện) |
-| Cơ sở dữ liệu | PostgreSQL 16 |
-| Công cụ | Postman/curl, Git, `node:test` |
+| Thành phần    | Công nghệ                                                                                           |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| Backend       | Node.js + Express, `pg` (không dùng ORM), `dotenv`; token đăng nhập dựng bằng `node:crypto` (HS256) |
+| Frontend      | ReactJS 19 + Vite 6, bộ định tuyến theo hash tự viết (không thêm thư viện)                          |
+| Cơ sở dữ liệu | PostgreSQL 16                                                                                       |
+| Công cụ       | Postman/curl, Git, `node:test`                                                                      |
 
 ```text
 ├── db/migrations/                  # L4 Dữ liệu: 001 tạo bảng (DDL của BT1), 002 dữ liệu danh mục
@@ -102,12 +102,12 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 ├── .env.example  .gitignore  package.json  README.md
 ```
 
-| Lớp trong sơ đồ BT1 | Thư mục |
-|---|---|
-| L1 Giao diện React (M1, M2, M3) | `src/frontend/` |
-| L2 API (Controller/Route) | `src/backend/src/routes`, `controllers` |
-| L3 Nghiệp vụ | `src/backend/src/services` |
-| L4 Dữ liệu (6 bảng) | `src/backend/src/repositories`, `db/migrations` |
+| Lớp trong sơ đồ BT1             | Thư mục                                         |
+| ------------------------------- | ----------------------------------------------- |
+| L1 Giao diện React (M1, M2, M3) | `src/frontend/`                                 |
+| L2 API (Controller/Route)       | `src/backend/src/routes`, `controllers`         |
+| L3 Nghiệp vụ                    | `src/backend/src/services`                      |
+| L4 Dữ liệu (6 bảng)             | `src/backend/src/repositories`, `db/migrations` |
 
 Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi lời gọi mạng đi qua `api/client.js`. Mỗi trang bọc dữ liệu bằng `<DataState>` (đang tải / lỗi kèm nút Thử lại / rỗng / có dữ liệu).
 
@@ -117,18 +117,18 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 
 ## 6. Trạng thái hiện tại (Sprint 2 – Buổi 10, 23/10/2026)
 
-| Hạng mục | Trạng thái |
-|---|---|
-| Sprint 1: migration 6 bảng, CRUD phiếu, đề xuất / phân công / đổi KTV, `ticket_log` cùng transaction, khóa dòng | Xong (TD-06, TD-07) |
-| Đăng nhập theo vai trò, 401 / 403, KTV chỉ thấy phiếu của mình | Xong (TD-14, TD-16) |
-| Giao diện: Đăng nhập + 3 màn hình M1, M2, M3 bám wireframe BT1, gọi API thật, mỗi màn bọc `DataState` | Xong |
-| Luồng chính chạy trọn: đăng nhập → danh sách → phân công → đặt lịch hẹn → đổi KTV → KTV xem phiếu và chuyển trạng thái | Xong, đã chạy bằng trình duyệt thật trên dữ liệu mẫu |
-| Đặt lịch hẹn kiểm tra trùng giờ (QT-05, khóa dòng kỹ thuật viên), cập nhật trạng thái (QT-01) | Xong (TD-15) |
-| Dừng backend → thông báo lỗi + nút Thử lại; token hết hạn → về trang Đăng nhập | Xong |
-| Tìm `fetch(` trong `src/frontend/src/pages/` | Không có kết quả |
-| Số test | 90: 83 chạy không cần CSDL (41 backend, 42 giao diện), 7 tích hợp cần `TEST_DATABASE_URL` |
-| Thông báo SMS / email lịch hẹn cho khách (FR07, US07) | **Chưa – đã cắt** (TD-15) |
-| Thử dựng trên clone mới | _(ghi ngày và kết quả sau khi chạy `bash scripts/thu-clone-moi.sh`)_ |
+| Hạng mục                                                                                                               | Trạng thái                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sprint 1: migration 6 bảng, CRUD phiếu, đề xuất / phân công / đổi KTV, `ticket_log` cùng transaction, khóa dòng        | Xong (TD-06, TD-07)                                                                                                                                                                                                                                              |
+| Đăng nhập theo vai trò, 401 / 403, KTV chỉ thấy phiếu của mình                                                         | Xong (TD-14, TD-16)                                                                                                                                                                                                                                              |
+| Giao diện: Đăng nhập + 3 màn hình M1, M2, M3 bám wireframe BT1, gọi API thật, mỗi màn bọc `DataState`                  | Xong                                                                                                                                                                                                                                                             |
+| Luồng chính chạy trọn: đăng nhập → danh sách → phân công → đặt lịch hẹn → đổi KTV → KTV xem phiếu và chuyển trạng thái | Xong, đã chạy bằng trình duyệt thật trên dữ liệu mẫu                                                                                                                                                                                                             |
+| Đặt lịch hẹn kiểm tra trùng giờ (QT-05, khóa dòng kỹ thuật viên), cập nhật trạng thái (QT-01)                          | Xong (TD-15)                                                                                                                                                                                                                                                     |
+| Dừng backend → thông báo lỗi + nút Thử lại; token hết hạn → về trang Đăng nhập                                         | Xong                                                                                                                                                                                                                                                             |
+| Tìm `fetch(` trong `src/frontend/src/pages/`                                                                           | Không có kết quả                                                                                                                                                                                                                                                 |
+| Số test                                                                                                                | 90: 83 chạy không cần CSDL (41 backend, 42 giao diện), 7 tích hợp cần `TEST_DATABASE_URL`                                                                                                                                                                        |
+| Thông báo SMS / email lịch hẹn cho khách (FR07, US07)                                                                  | **Chưa – đã cắt** (TD-15)                                                                                                                                                                                                                                        |
+| Thử dựng trên clone mới                                                                                                | _(Thử dựng trên clone mới ngày 23/10/2026: đạt cả 8 bước (clone nhánh dev, cài thư viện, tạo database, migrate, npm test, chạy backend, đăng nhập, dựng giao diện). Nhật ký: docs/ket-qua-chay/thu-clone-moi.txt, ảnh: docs/ket-qua-chay/24-thu-clone-moi.png.)_ |
 
 **Quyết định kỹ thuật / lỗi đã gặp:** xem [thay-doi-thiet-ke.md](docs/thay-doi-thiet-ke.md) (TD-14 đến TD-16). _(Bổ sung lỗi thực tế gặp trên máy, ví dụ cổng bị chiếm, sai mật khẩu DB.)_
 
