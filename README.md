@@ -71,6 +71,7 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 | `EADDRINUSE :::3000` ở bước 7                           | cổng 3000 đang bị chiếm: tắt backend cũ hoặc đặt `PORT=3001` trong `.env` (và `VITE_API_PROXY=http://localhost:3001` trong `src/frontend/.env`) |
 | Giao diện báo "Không kết nối được máy chủ"              | backend chưa chạy (bước 7)                                                                                                                      |
 | Bị đưa về trang Đăng nhập sau khi khởi động lại backend | chưa đặt `AUTH_SECRET` trong `.env` nên mỗi lần khởi động token cũ mất hiệu lực                                                                 |
+| `npm test` báo "SASL: client password must be a string" ở 7 test tích hợp | Biến `TEST_DATABASE_URL` đang đặt sai trong terminal: chạy `unset TEST_DATABASE_URL` (hoặc dùng `npm run test:full`) |
 
 ## 4. Công nghệ và cấu trúc thư mục
 
