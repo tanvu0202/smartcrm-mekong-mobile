@@ -1,6 +1,6 @@
 // L3 – Service: quy tắc nghiệp vụ QT-01..QT-06. Không biết gì về HTTP hay SQL.
 // Phụ thuộc được tiêm vào (dependency injection) để unit test bằng repository giả.
-const { badRequest, notFound, conflict, unprocessable } = require('../errors');
+const { badRequest, forbidden, notFound, conflict, unprocessable } = require('../errors');
 
 const ISSUE_GROUPS = ['MAN_HINH', 'PIN', 'SAC', 'LOA', 'CAMERA', 'PHAN_MEM', 'KHAC'];
 
@@ -29,7 +29,24 @@ function validateTicketInput(body, { partial = false } = {}) {
   };
 }
 
-function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, db, withTransaction, config }) {
+/** QT-01: vòng đời một chiều, không được bỏ bước. */
+const NEXT_STATUS = { MOI: 'DA_PHAN_CONG', DA_PHAN_CONG: 'DANG_XU_LY', DANG_XU_LY: 'HOAN_TAT' };
+const APPOINTMENT_TYPES = ['GIAO', 'NHAN'];
+
+function validateAppointmentInput(body) {
+  const b = body || {};
+  const errors = [];
+  if (!APPOINTMENT_TYPES.includes(b.type)) errors.push(`type phải thuộc ${APPOINTMENT_TYPES.join(', ')}`);
+  const start = Date.parse(b.startTime);
+  const end = Date.parse(b.endTime);
+  if (Number.isNaN(start)) errors.push('startTime không phải thời điểm hợp lệ');
+  if (Number.isNaN(end)) errors.push('endTime không phải thời điểm hợp lệ');
+  if (!Number.isNaN(start) && !Number.isNaN(end) && end <= start) errors.push('endTime phải sau startTime');
+  if (errors.length) throw badRequest('Dữ liệu lịch hẹn không hợp lệ', errors);
+  return { type: b.type, startTime: new Date(start).toISOString(), endTime: new Date(end).toISOString() };
+}
+
+function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, appointmentRepo, db, withTransaction, config }) {
   const warnAt = config?.openTicketWarnThreshold ?? 10;
   const minSkill = config?.minSuggestProficiency ?? 3;
 
@@ -144,6 +161,54 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, 
     reassign(id, input = {}) {
       return changeAssignment(id, input, 'REASSIGN');
     },
+
+    /**
+     * Cập nhật trạng thái theo vòng đời (QT-01): DA_PHAN_CONG → DANG_XU_LY → HOAN_TAT.
+     * Chuyển thẳng DA_PHAN_CONG → HOAN_TAT bị từ chối với thông báo "Phải chuyển qua Đang xử lý trước" (US05).
+     * actor.scopeTechnicianId (nếu có): chỉ kỹ thuật viên được giao phiếu mới đổi được.
+     */
+    async changeStatus(id, { status, changedBy, scopeTechnicianId } = {}) {
+      if (!changedBy) throw badRequest('changedBy là bắt buộc');
+      if (!['DANG_XU_LY', 'HOAN_TAT'].includes(status)) throw badRequest('status phải là DANG_XU_LY hoặc HOAN_TAT');
+      return withTransaction(async (conn) => {
+        const t = await getOrThrow(conn, id, { forUpdate: true });
+        if (scopeTechnicianId !== undefined && t.technician_id !== scopeTechnicianId) {
+          throw forbidden('Phiếu này không được giao cho bạn');
+        }
+        if (t.status === status) throw conflict('Phiếu đã ở trạng thái này', 'INVALID_TRANSITION');
+        if (NEXT_STATUS[t.status] !== status) {
+          if (t.status === 'DA_PHAN_CONG' && status === 'HOAN_TAT') {
+            throw conflict('Phải chuyển qua Đang xử lý trước', 'STATUS_SKIP'); // QT-01
+          }
+          throw conflict(`Không thể chuyển từ ${t.status} sang ${status}`, 'INVALID_TRANSITION');
+        }
+        const updated = await ticketRepo.setStatus(conn, id, status);
+        const log = await logRepo.insert(conn, {
+          ticketId: id, action: 'DOI_TRANG_THAI', oldTechnicianId: t.technician_id, newTechnicianId: t.technician_id,
+          oldStatus: t.status, newStatus: status, changedBy,
+        });
+        return { ticket: updated, log };
+      });
+    },
+
+    /**
+     * Đặt lịch hẹn giao/nhận máy (QT-05): phiếu phải đã có kỹ thuật viên và chưa hoàn tất; kỹ thuật viên không được
+     * có hai lịch trùng khung giờ. Khóa dòng kỹ thuật viên nên hai yêu cầu đặt cùng lúc cho một người sẽ xếp hàng.
+     */
+    async createAppointment(id, body) {
+      const a = validateAppointmentInput(body);
+      return withTransaction(async (conn) => {
+        const t = await getOrThrow(conn, id, { forUpdate: true });
+        if (t.status === 'HOAN_TAT') throw conflict('Phiếu đã hoàn tất, không đặt lịch hẹn', 'TICKET_CLOSED');
+        if (t.technician_id === null) throw conflict('Phiếu chưa có kỹ thuật viên – hãy phân công trước khi đặt lịch', 'TICKET_NOT_ASSIGNED');
+        await technicianRepo.findById(conn, t.technician_id, { forUpdate: true });
+        const clash = await appointmentRepo.findOverlap(conn, t.technician_id, a.startTime, a.endTime);
+        if (clash) throw conflict('Kỹ thuật viên đã có lịch trong khung giờ này (trùng lịch)', 'APPOINTMENT_OVERLAP'); // QT-05
+        return appointmentRepo.insert(conn, { ticketId: id, ...a });
+      });
+    },
+
+    listAppointments: async (id) => { await getOrThrow(db, id); return appointmentRepo.findByTicket(db, id); },
 
     history: async (id) => { await getOrThrow(db, id); return logRepo.findByTicket(db, id); },
   };

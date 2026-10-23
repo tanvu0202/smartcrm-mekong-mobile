@@ -12,6 +12,9 @@ function createTicketRoutes(controller, { requireManager }) {
   r.post('/:id/assign', requireManager, controller.assign);
   r.post('/:id/reassign', requireManager, controller.reassign);
   r.get('/:id/history', requireManager, controller.history);
+  r.post('/:id/status', controller.changeStatus); // KTV (phiếu của mình) hoặc quản lý
+  r.get('/:id/appointments', requireManager, controller.appointments);
+  r.post('/:id/appointments', requireManager, controller.createAppointment);
   return r;
 }
 module.exports = { createTicketRoutes };

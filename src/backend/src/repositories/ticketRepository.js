@@ -10,7 +10,11 @@ const ticketRepository = {
     if (status) { params.push(status); where.push(`status = $${params.length}`); }
     if (centerId) { params.push(centerId); where.push(`center_id = $${params.length}`); }
     if (technicianId) { params.push(technicianId); where.push(`technician_id = $${params.length}`); }
-    const sql = `SELECT ${COLS} FROM ticket ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+    // appointment_start: giờ bắt đầu lịch hẹn đang hiệu lực gần nhất (cột "Lịch hẹn" của M3)
+    const sql = `SELECT ${COLS},
+                   (SELECT min(a.start_time) FROM appointment a
+                     WHERE a.ticket_id = ticket.ticket_id AND a.status = 'DA_DAT') AS appointment_start
+                 FROM ticket ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
                  ORDER BY priority, due_date`; // khớp idx_ticket_queue
     return (await db.query(sql, params)).rows;
   },
@@ -49,6 +53,11 @@ const ticketRepository = {
     const { rows } = await db.query(
       `UPDATE ticket SET technician_id=$2, status=$3 WHERE ticket_id=$1 RETURNING ${COLS}`,
       [id, technicianId, status]);
+    return rows[0] || null;
+  },
+
+  async setStatus(db, id, status) {
+    const { rows } = await db.query(`UPDATE ticket SET status=$2 WHERE ticket_id=$1 RETURNING ${COLS}`, [id, status]);
     return rows[0] || null;
   },
 

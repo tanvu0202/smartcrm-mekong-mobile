@@ -35,6 +35,13 @@ function createTicketController(service) {
     // Người thực hiện lấy từ token đăng nhập, không lấy từ body (NFR05: lịch sử phải ghi đúng người).
     reassign: withId(async (req, res, id) => res.json(await service.reassign(id, { ...req.body, changedBy: req.user.username }))),
     assign: withId(async (req, res, id) => res.json(await service.assign(id, { ...req.body, changedBy: req.user.username }))),
+    // Kỹ thuật viên chỉ cập nhật phiếu của mình (server ép scope); quản lý cập nhật được mọi phiếu.
+    changeStatus: withId(async (req, res, id) => res.json(await service.changeStatus(id, {
+      status: req.body?.status, changedBy: req.user.username,
+      scopeTechnicianId: isTechnician(req) ? req.user.technicianId : undefined,
+    }))),
+    createAppointment: withId(async (req, res, id) => res.status(201).json({ data: await service.createAppointment(id, req.body) })),
+    appointments: withId(async (req, res, id) => res.json({ data: await service.listAppointments(id) })),
     history: withId(async (req, res, id) => res.json({ data: await service.history(id) })),
   };
 }

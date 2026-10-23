@@ -4,12 +4,13 @@ const ticketRepo = require('./src/repositories/ticketRepository');
 const technicianRepo = require('./src/repositories/technicianRepository');
 const centerRepo = require('./src/repositories/centerRepository');
 const logRepo = require('./src/repositories/ticketLogRepository');
+const appointmentRepo = require('./src/repositories/appointmentRepository');
 const { createTicketService } = require('./src/services/ticketService');
 const { createAuthService } = require('./src/services/authService');
 const { DEMO_ACCOUNTS, buildUsers } = require('./src/auth/users');
 const { createApp } = require('./src/app');
 
-const ticketService = createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, db: pool, withTransaction, config });
+const ticketService = createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, appointmentRepo, db: pool, withTransaction, config });
 const authService = createAuthService({
   users: buildUsers(DEMO_ACCOUNTS, config.auth.demoPassword),
   secret: config.auth.secret,
