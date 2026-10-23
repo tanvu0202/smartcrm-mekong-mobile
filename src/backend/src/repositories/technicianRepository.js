@@ -5,6 +5,23 @@ const technicianRepository = {
     return (await db.query(sql, [id])).rows[0] || null;
   },
 
+  async findByPhone(db, phone) {
+    const { rows } = await db.query(
+      `SELECT technician_id, center_id, full_name, phone, is_active FROM technician WHERE phone = $1`, [phone]);
+    return rows[0] || null;
+  },
+
+  /** Danh sách KTV đang hoạt động (có thể lọc theo trung tâm) – dùng khi quản lý chọn thủ công. */
+  async findAll(db, { centerId } = {}) {
+    const params = [];
+    let where = 'WHERE is_active';
+    if (centerId) { params.push(centerId); where += ` AND center_id = $${params.length}`; }
+    const { rows } = await db.query(
+      `SELECT technician_id, center_id, full_name, phone, is_active FROM technician ${where}
+        ORDER BY center_id, full_name`, params);
+    return rows;
+  },
+
   /** KTV cùng trung tâm, đang hoạt động, tay nghề >= minProficiency với nhóm sự cố; kèm số phiếu mở. */
   async findCandidates(db, { centerId, issueGroup, minProficiency }) {
     const { rows } = await db.query(

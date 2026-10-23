@@ -29,7 +29,7 @@ function validateTicketInput(body, { partial = false } = {}) {
   };
 }
 
-function createTicketService({ ticketRepo, technicianRepo, logRepo, db, withTransaction, config }) {
+function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, db, withTransaction, config }) {
   const warnAt = config?.openTicketWarnThreshold ?? 10;
   const minSkill = config?.minSuggestProficiency ?? 3;
 
@@ -85,6 +85,15 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, db, withTran
 
   return {
     list: (filters) => ticketRepo.findAll(db, filters),
+
+    /** Danh mục cho giao diện: trung tâm (bộ lọc M1) và KTV đang hoạt động (chọn thủ công khi không có đề xuất, US02 ngoại lệ). */
+    listCenters: () => centerRepo.findAll(db),
+    listTechnicians({ centerId } = {}) {
+      if (centerId !== undefined && centerId !== '' && !(Number.isInteger(Number(centerId)) && Number(centerId) > 0)) {
+        throw badRequest('center_id phải là số nguyên dương');
+      }
+      return technicianRepo.findAll(db, { centerId: centerId ? Number(centerId) : undefined });
+    },
 
     get: (id) => getOrThrow(db, id),
 
