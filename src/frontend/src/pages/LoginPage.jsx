@@ -1,5 +1,7 @@
+// Đăng nhập (TD-14). Có ba nút tài khoản demo: bấm một lần là điền và đăng nhập luôn.
 import { useState } from 'react';
 import { login } from '../api/auth.api.js';
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../lib/demoAccounts.js';
 
 export default function LoginPage({ notice, onLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -7,17 +9,27 @@ export default function LoginPage({ notice, onLoggedIn }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  async function submit(e) {
-    e.preventDefault();
+  async function signIn(u, p) {
     setBusy(true);
     setError(null);
     try {
-      onLoggedIn(await login(username, password));
+      onLoggedIn(await login(u, p));
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
     }
+  }
+
+  function submit(e) {
+    e.preventDefault();
+    signIn(username, password);
+  }
+
+  function quick(account) {
+    setUsername(account.username);
+    setPassword(DEMO_PASSWORD);
+    signIn(account.username, DEMO_PASSWORD);
   }
 
   return (
@@ -35,7 +47,21 @@ export default function LoginPage({ notice, onLoggedIn }) {
         {error && <div className="state state-error" role="alert">{error}</div>}
         <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'Đang đăng nhập…' : 'Đăng nhập'}</button>
       </form>
-      <p className="muted small">Tài khoản demo: <code>dieu.phoi</code> (quản lý), <code>ktv.hai</code>, <code>ktv.long</code> (kỹ thuật viên); mật khẩu theo <code>DEMO_PASSWORD</code> trong .env của backend (mặc định <code>demo123</code>).</p>
+
+      <section className="card demo" aria-label="Tài khoản demo">
+        <h2>Tài khoản demo – bấm để đăng nhập ngay</h2>
+        <div className="demo-list">
+          {DEMO_ACCOUNTS.map((a) => (
+            <button key={a.username} type="button" className="demo-item" disabled={busy} onClick={() => quick(a)}>
+              <strong>{a.fullName}</strong>
+              <span>{a.roleLabel}</span>
+              <code>{a.username}</code>
+              <small>{a.hint}</small>
+            </button>
+          ))}
+        </div>
+        <p className="muted small">Mật khẩu demo mặc định <code>{DEMO_PASSWORD}</code> (đổi bằng <code>DEMO_PASSWORD</code> trong .env của backend; nếu đã đổi thì nhập tay ở form trên).</p>
+      </section>
     </main>
   );
 }

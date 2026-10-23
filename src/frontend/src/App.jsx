@@ -43,21 +43,28 @@ export default function App() {
 
   if (!user) return <LoginPage notice={notice} onLoggedIn={onLoggedIn} />;
 
+  const isManager = user.role === 'QUAN_LY';
+  const onTicket = route.name === 'ticket';
   return (
     <>
       <header className="topbar">
-        <strong>Mekong Mobile · Phân công kỹ thuật viên</strong>
-        <nav>
-          {user.role === 'QUAN_LY' && <a href="#/queue" className={route.name === 'queue' || route.name === 'ticket' ? 'active' : ''}>Danh sách phiếu</a>}
-          <a href="#/my" className={route.name === 'my' ? 'active' : ''}>{user.role === 'KTV' ? 'Phiếu của tôi' : 'Phiếu theo KTV'}</a>
-        </nav>
-        <span className="who">{user.fullName} ({user.role === 'KTV' ? 'Kỹ thuật viên' : 'Quản lý'})
-          <button type="button" className="btn" onClick={onLogout}>Đăng xuất</button></span>
+        <strong>Mekong Mobile · Bảo hành</strong>
+        <span className="who">{isManager ? 'Quản lý trung tâm' : 'Kỹ thuật viên'} · {user.fullName}
+          <button type="button" className="btn btn-sm" onClick={onLogout}>Đăng xuất</button></span>
       </header>
+      <nav className="tabs" aria-label="Màn hình">
+        {isManager && <a href="#/queue" className={`tab ${route.name === 'queue' ? 'active' : ''}`}>M1 Phiếu chờ phân công</a>}
+        {isManager && (onTicket
+          ? <span className="tab active">M2 Phân công &amp; lịch hẹn</span>
+          : <span className="tab disabled" title="Chọn một phiếu ở M1 để mở">M2 Phân công &amp; lịch hẹn</span>)}
+        <a href="#/my" className={`tab ${route.name === 'my' ? 'active' : ''}`}>{isManager ? 'M3 Phiếu theo kỹ thuật viên' : 'M3 Phiếu của tôi'}</a>
+      </nav>
       <main className="page">
-        {route.name === 'queue' && user.role === 'QUAN_LY' && <TicketQueuePage />}
-        {route.name === 'ticket' && user.role === 'QUAN_LY' && <AssignPage key={route.params.id} ticketId={Number(route.params.id)} />}
-        {route.name === 'my' && <MyTicketsPage user={user} />}
+        <div className="frame">
+          {route.name === 'queue' && isManager && <TicketQueuePage />}
+          {route.name === 'ticket' && isManager && <AssignPage key={route.params.id} ticketId={Number(route.params.id)} />}
+          {route.name === 'my' && <MyTicketsPage user={user} />}
+        </div>
       </main>
     </>
   );
