@@ -10,6 +10,8 @@ export const ISSUE_LABEL = {
 };
 export const ACTION_LABEL = { PHAN_CONG: 'Phân công', DOI_KTV: 'Đổi kỹ thuật viên', DOI_TRANG_THAI: 'Đổi trạng thái' };
 
+export const APPOINTMENT_LABEL = { GIAO: 'Giao', NHAN: 'Nhận' };
+export const appointmentLabel = (t) => APPOINTMENT_LABEL[t] ?? t;
 export const statusLabel = (s) => STATUS_LABEL[s] ?? s;
 export const priorityLabel = (p) => PRIORITY_LABEL[p] ?? String(p);
 export const issueLabel = (g) => ISSUE_LABEL[g] ?? g;
@@ -22,6 +24,15 @@ export function formatDateTime(iso) {
   if (Number.isNaN(d.getTime())) return '—';
   const p = (n) => String(n).padStart(2, '0');
   return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/** ISO → '09/10 15:00' (dạng ngắn của wireframe). Dữ liệu sai → '—'. */
+export function formatShort(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  const p = (n) => String(n).padStart(2, '0');
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 /** Quá hạn cam kết? (hạn thiếu/sai → false) */

@@ -29,6 +29,7 @@ export function toTicket(row) {
     status: row.status,
     dueDate: row.due_date,
     createdAt: row.created_at ?? null,
+    appointmentStart: row.appointment_start ?? null, // chỉ có trong danh sách phiếu (cột Lịch hẹn của M3)
   };
 }
 
@@ -52,6 +53,11 @@ export function toTechnician(row) {
 export function toCenter(row) {
   need(row, ['center_id', 'name'], 'trung tâm');
   return { id: row.center_id, name: row.name };
+}
+
+export function toAppointment(row) {
+  need(row, ['appointment_id', 'appointment_type', 'start_time', 'end_time'], 'lịch hẹn');
+  return { id: row.appointment_id, type: row.appointment_type, startTime: row.start_time, endTime: row.end_time };
 }
 
 export function toLog(row) {
