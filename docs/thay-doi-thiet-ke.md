@@ -92,21 +92,23 @@ TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên v
 - Lý do           : Đề Buổi 10 yêu cầu có đăng nhập và khi nhận 401 phải xóa token, về trang đăng nhập; M3 "Phiếu của tôi" cũng chỉ có nghĩa khi biết ai đang đăng nhập. SRS 1.5 giả định có "dịch vụ xác thực có sẵn" nhưng dịch vụ đó không tồn tại trong dự án, nên dựng bản thay thế nhỏ nhất. Không tạo bảng tài khoản: ba tài khoản demo (1 quản lý, 2 kỹ thuật viên) khai báo trong mã, mật khẩu băm scrypt khi khởi động; token HS256 ký bằng `node:crypto` (không thêm thư viện). Kỹ thuật viên liên kết với bản ghi `technician` qua số điện thoại.
 - Ảnh hưởng       : ERD và DDL BT1 giữ nguyên. Thêm `POST /auth/login`, `GET /auth/me`; mọi endpoint khác cần `Authorization: Bearer`; 401 `UNAUTHENTICATED` / `TOKEN_EXPIRED` / `INVALID_CREDENTIALS`; 403 `FORBIDDEN`. Biến môi trường mới `AUTH_SECRET`, `DEMO_PASSWORD`, `TOKEN_TTL_SECONDS`, `CORS_ORIGIN`. SRS mục 1.1 và 1.5 thêm ghi chú trỏ về TD này. Giới hạn đã biết: không quản lý tài khoản, không đổi mật khẩu, không thu hồi token trước hạn.
 
-### TD-15 Phạm vi giao diện Sprint 2: làm 3 màn hình + Đăng nhập, cắt các phần còn lại
-- Phản hồi của GV : Không có.
-- Quyết định      : CẮT PHẠM VI (ghi lý do), giữ nguyên thiết kế
-- Lý do           : Ưu tiên một luồng chạy trọn trên dữ liệu thật (đăng nhập → phân công → đổi KTV → KTV xem phiếu) và mọi màn hình xử lý đủ trạng thái tải / lỗi / rỗng, hơn là nhiều màn hình dở dang. Các phần cắt đều cần thêm API, màn hình và kiểm thử riêng.
+### TD-15 Giao diện Sprint 2 bám wireframe BT1; chỉ cắt thông báo lịch hẹn cho khách
+- Phản hồi của GV : Không có (tự phát hiện khi đối chiếu giao diện chạy thật với wireframe BT1 ngày 23/10/2026).
+- Quyết định      : GIỮ NGUYÊN THIẾT KẾ, hiện thực cho khớp; CẮT một phần có ghi lý do
+- Lý do           : Bản giao diện đầu tiên chỉ làm luồng phân công và bỏ lịch hẹn, cập nhật trạng thái, thẻ tổng quan để có một luồng chạy trọn sớm. Khi đối chiếu, giao diện khác wireframe ở nhiều chỗ và các màn hình thiếu phần chức năng đã vẽ, nên bổ sung để sản phẩm khớp thiết kế đã nộp ở BT1 thay vì sửa bản vẽ. Chỉ cắt thông báo SMS / email cho khách (FR07, US07) vì cần dịch vụ gửi tin bên ngoài mà dự án không có.
 - Ảnh hưởng       :
-  - Làm: Đăng nhập · M1 danh sách phiếu (lọc trạng thái, trung tâm) · M2 chi tiết, đề xuất, phân công, đổi KTV, lịch sử · M3 phiếu của kỹ thuật viên.
-  - Cắt khỏi M2: khối "Lịch hẹn" của wireframe (QT-05, đã hoãn từ TD-12; bảng `appointment` vẫn còn trong migration, chưa có endpoint). Hệ quả: FR04, FR07 và US04 chưa có giao diện.
-  - Cắt khỏi M1: bộ lọc theo mức ưu tiên và khối tổng quan (phiếu hôm nay, quá hạn, số phiếu mở của từng KTV – US06). Mức ưu tiên vẫn hiển thị và là tiêu chí sắp xếp danh sách.
-  - Cắt khỏi M3: nút cập nhật trạng thái DANG_XU_LY / HOAN_TAT (phần FR09 của US05), nên M3 chỉ xem.
-  - Cắt: thông báo lịch hẹn cho khách (US07) vì phụ thuộc lịch hẹn.
-  - Khác wireframe: cảnh báo kỹ thuật viên ≥ 10 phiếu (UC01 5a) hiện dưới dạng dòng cảnh báo sau khi phân công (API trả `warnings`, QT-06 chỉ cảnh báo) thay cho hộp hỏi Có / Không trước khi phân công; xác nhận phân công là một bước xác nhận riêng trong trang.
+  - Backend: thêm `POST /tickets/{id}/status` (chuỗi DA_PHAN_CONG → DANG_XU_LY → HOAN_TAT, nhảy bước trả 409 `STATUS_SKIP`; kỹ thuật viên chỉ đổi được phiếu của mình), `GET` và `POST /tickets/{id}/appointments` (quản lý), trường `appointment_start` ở danh sách phiếu. Ghi `ticket_log` (DOI_TRANG_THAI) trong cùng transaction.
+  - QT-05 (trùng lịch): so khung giờ với các lịch `DA_DAT` của cùng kỹ thuật viên, hai lịch chỉ chạm đầu mút thì hợp lệ; khóa dòng kỹ thuật viên để hai lần đặt đồng thời không cùng qua (đã thử bằng hai phiên psql song song).
+  - M1: ba thẻ tổng quan (phiếu phát sinh hôm nay; quá hạn hoặc còn ≤ 4 giờ; số phiếu đang mở của từng kỹ thuật viên), bộ lọc Trung tâm / Mức ưu tiên / Trạng thái kèm nút "Lọc", phân trang 20 dòng (NFR02).
+  - M2: khối "Đặt lịch hẹn giao – nhận máy", hộp Có / Không khi kỹ thuật viên ≥ 10 phiếu (UC01 5a), thông báo 4a, 5a, 5b, trùng lịch như wireframe.
+  - M3: cột "Lịch hẹn (bắt đầu)", nút "Bắt đầu xử lý" / "Hoàn tất", thông báo "Phải chuyển qua Đang xử lý trước".
+  - Thêm so với wireframe (theo yêu cầu của tôi sau khi xem giao diện): trang Đăng nhập có ba nút tài khoản demo bấm là đăng nhập luôn (TD-14); M2 của phiếu đã phân công vẫn hiện bảng "Đề xuất kỹ thuật viên thay thế" (bỏ người đang phụ trách) làm nguồn chọn cho khối Đổi kỹ thuật viên.
+  - Trạng thái rỗng đã rà cho mọi vùng dữ liệu: M1 (hết phiếu Mới; lọc không khớp), M2 (không có đề xuất; chưa có lịch hẹn; chưa có lịch sử; không có KTV thay thế phù hợp), M3 (kỹ thuật viên chưa có phiếu; quản lý chọn kỹ thuật viên chưa có phiếu).
+  - Còn khác wireframe: không có thông báo SMS / email nên thông báo sau khi lưu lịch hẹn chỉ ghi "Đã lưu lịch hẹn."; thanh trên ghi vai trò và tên người đăng nhập, không ghi tên trung tâm vì tài khoản demo không gắn trung tâm; bộ lọc Trung tâm mặc định "Tất cả".
 
 ### TD-16 Bổ sung endpoint tra cứu, `changedBy` lấy từ token, kỹ thuật viên chỉ thấy phiếu của mình
 - Phản hồi của GV : Không có.
 - Quyết định      : SỬA
 - Lý do           : (1) Bộ lọc trung tâm của M1 và hộp chọn thủ công của M2 (SRS US02, ngoại lệ "cho chọn thủ công trong trung tâm") cần danh sách trung tâm và kỹ thuật viên. (2) Khi đã có đăng nhập, để client tự gửi `changedBy` trong body thì ai cũng ghi lịch sử dưới tên người khác; NFR05 cần nhật ký đáng tin. (3) Chỉ ẩn nút trên giao diện thì không bảo vệ được dữ liệu, nên quyền được ép ở server.
-- Ảnh hưởng       : Thêm `GET /centers`, `GET /technicians?center_id=` (chỉ quản lý). `ticket_log.changed_by` luôn lấy từ token; trường `changedBy` trong body bị bỏ qua. Kỹ thuật viên gọi `GET /tickets` chỉ nhận phiếu của chính mình (bộ lọc `technician_id` bị ghi đè), mở phiếu người khác trả 403; tạo / sửa / xóa / đề xuất / phân công / đổi KTV / lịch sử chỉ cho quản lý. docs/api-contract.md cập nhật; có test ở tests/auth.test.js.
+- Ảnh hưởng       : Thêm `GET /centers`, `GET /technicians?center_id=` (chỉ quản lý). `ticket_log.changed_by` luôn lấy từ token; trường `changedBy` trong body bị bỏ qua. Kỹ thuật viên gọi `GET /tickets` chỉ nhận phiếu của chính mình (bộ lọc `technician_id` bị ghi đè), mở phiếu người khác trả 403; tạo / sửa / xóa / đề xuất / phân công / đổi KTV / lịch sử / lịch hẹn chỉ cho quản lý; đổi trạng thái do kỹ thuật viên chỉ áp dụng cho phiếu của chính họ. docs/api-contract.md cập nhật; có test ở tests/auth.test.js.
 

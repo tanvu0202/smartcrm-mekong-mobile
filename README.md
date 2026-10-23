@@ -10,8 +10,8 @@
 
 Phiếu bảo hành ở trạng thái "Mới" → Quản lý phân công kỹ thuật viên phù hợp → (đổi kỹ thuật viên nếu cần, bắt buộc nêu lý do) → Kỹ thuật viên xem phiếu được giao.
 
-- **Làm (đến Sprint 2):** đăng nhập theo vai trò · xem và lọc phiếu chờ phân công (M1) · đề xuất, phân công, đổi kỹ thuật viên kèm lý do và xem lịch sử (M2) · kỹ thuật viên xem phiếu của mình (M3) · CRUD phiếu ở API.
-- **Chưa làm (đã cắt có lý do, xem [TD-15](docs/thay-doi-thiet-ke.md)):** đặt lịch hẹn và kiểm tra trùng giờ (QT-05) · cập nhật trạng thái DANG_XU_LY / HOAN_TAT · tổng quan khối lượng · thông báo lịch hẹn cho khách.
+- **Làm (đến Sprint 2), giao diện bám wireframe BT1:** đăng nhập theo vai trò · M1: thẻ tổng quan, lọc theo trung tâm / mức ưu tiên / trạng thái, phân trang 20 dòng · M2: đề xuất, phân công (cảnh báo ≥ 10 phiếu hỏi Có / Không), đổi kỹ thuật viên kèm lý do, đặt lịch hẹn giao – nhận máy có kiểm tra trùng giờ (QT-05), lịch sử thay đổi · M3: kỹ thuật viên xem phiếu của mình và chuyển trạng thái Đang xử lý → Hoàn tất (QT-01) · CRUD phiếu ở API.
+- **Chưa làm (đã cắt có lý do, xem [TD-15](docs/thay-doi-thiet-ke.md)):** gửi thông báo SMS / email lịch hẹn cho khách (FR07, US07).
 - **Không làm (ngoài phạm vi L4):** tiếp nhận và phân loại yêu cầu (L2) · kho linh kiện (L5) · khảo sát hài lòng (L8) · báo cáo doanh thu · phân loại bằng AI (L10).
 
 ## 2. Yêu cầu môi trường
@@ -37,22 +37,23 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 | 3 | `npm run install:all` | Cài thư viện cho backend và giao diện, không báo `ERR!` |
 | 4 | `npm run db:create` | `Đã tạo database "smartcrm"` (hoặc `đã có – bỏ qua`) |
 | 5 | `npm run migrate` | `đã chạy 001_…`, `đã chạy 002_…` (chạy lại thì `bỏ qua`) |
-| 6 | `npm test` | `pass 54`, `fail 0` (4 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
+| 6 | `npm test` | `pass 83`, `fail 0` (7 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
 | 7 | `npm start` (cửa sổ terminal 1) | `Mekong L4 API chạy tại http://localhost:3000` |
 | 8 | `npm run web` (cửa sổ terminal 2) | Mở http://localhost:5173 → trang Đăng nhập |
 
-**Tài khoản demo** (mật khẩu chung `demo123`, đổi bằng `DEMO_PASSWORD` trong `.env`):
+**Tài khoản demo** (mật khẩu chung `demo123`, đổi bằng `DEMO_PASSWORD` trong `.env`). Trang Đăng nhập có sẵn ba nút tài khoản demo: bấm một nút là đăng nhập luôn, không cần gõ gì:
 
 | Tên đăng nhập | Vai trò | Thấy gì |
 |---|---|---|
-| `dieu.phoi` | Quản lý | M1 danh sách phiếu · M2 chi tiết và phân công · M3 xem theo từng kỹ thuật viên |
-| `ktv.hai`, `ktv.long` | Kỹ thuật viên | Chỉ M3 "Phiếu của tôi" (server chỉ trả phiếu của chính họ) |
+| `dieu.phoi` | Quản lý | M1 phiếu chờ phân công · M2 phân công và lịch hẹn · M3 xem theo từng kỹ thuật viên (chỉ xem) |
+| `ktv.hai`, `ktv.long` | Kỹ thuật viên | Chỉ M3 "Phiếu của tôi" và nút chuyển trạng thái (server chỉ trả và chỉ cho đổi phiếu của chính họ) |
 
 **Thử nhanh các tình huống chính:**
 
-- Đăng nhập `dieu.phoi` → M1 → bấm một phiếu → chọn kỹ thuật viên đề xuất → *Phân công* → *Xác nhận*.
-- Vẫn ở M2: chọn kỹ thuật viên khác, nhập lý do → *Đổi kỹ thuật viên*; lịch sử hiện thêm một dòng.
-- Đăng xuất, đăng nhập `ktv.hai` → thấy phiếu vừa giao; đăng nhập `ktv.long` (chưa có phiếu) → trạng thái rỗng.
+- Ở trang Đăng nhập bấm nút **Điều phối viên** → M1 → bấm *Phân công* ở một phiếu → chọn kỹ thuật viên đề xuất → *Xác nhận phân công*.
+- Vẫn ở M2: phiếu đã phân công vẫn hiện bảng *Đề xuất kỹ thuật viên thay thế* (bỏ người đang phụ trách); chọn một dòng sẽ điền vào ô "Kỹ thuật viên mới", nhập lý do → *Lưu*; lịch sử hiện thêm một dòng.
+- Vẫn ở M2: khối *Đặt lịch hẹn giao – nhận máy* → chọn loại, ngày, giờ → *Đặt lịch hẹn*; đặt tiếp một lịch chồng giờ của cùng kỹ thuật viên → thông báo trùng lịch, không lưu.
+- Đăng xuất, bấm nút **Nguyễn Hải** (`ktv.hai`) → thấy phiếu vừa giao kèm giờ lịch hẹn → *Bắt đầu xử lý* → *Hoàn tất*; bấm nút **Trần Long** (`ktv.long`, chưa có phiếu) → trạng thái rỗng.
 - Tắt backend (Ctrl+C ở terminal 1) rồi bấm *Tải lại* → thông báo lỗi kèm nút *Thử lại*; bật lại backend, bấm *Thử lại* → dữ liệu hiện lại.
 - Khởi động lại backend khi đang đăng nhập mà `AUTH_SECRET` đổi → lần gọi kế tiếp nhận 401, giao diện xóa token và về trang Đăng nhập.
 
@@ -60,7 +61,7 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 
 **Gọi thử API bằng curl:** `bash scripts/demo-curl.sh` (tự đăng nhập, ghi kết quả vào `docs/ket-qua-chay/`).
 
-**Chạy cả 4 test tích hợp trên PostgreSQL thật:** `npm run test:full` (tự đọc thông tin CSDL từ `.env`) → `pass 58`.
+**Chạy cả 7 test tích hợp trên PostgreSQL thật:** `npm run test:full` (tự đọc thông tin CSDL từ `.env`) → `pass 90`.
 
 **Lỗi thường gặp:**
 
@@ -120,12 +121,13 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 |---|---|
 | Sprint 1: migration 6 bảng, CRUD phiếu, đề xuất / phân công / đổi KTV, `ticket_log` cùng transaction, khóa dòng | Xong (TD-06, TD-07) |
 | Đăng nhập theo vai trò, 401 / 403, KTV chỉ thấy phiếu của mình | Xong (TD-14, TD-16) |
-| Giao diện: Đăng nhập + 3 màn hình M1, M2, M3 gọi API thật, mỗi màn bọc `DataState` | Xong |
-| Luồng chính chạy trọn: đăng nhập → danh sách → phân công → đổi KTV → KTV xem phiếu | Xong, đã chạy bằng trình duyệt thật trên dữ liệu mẫu |
+| Giao diện: Đăng nhập + 3 màn hình M1, M2, M3 bám wireframe BT1, gọi API thật, mỗi màn bọc `DataState` | Xong |
+| Luồng chính chạy trọn: đăng nhập → danh sách → phân công → đặt lịch hẹn → đổi KTV → KTV xem phiếu và chuyển trạng thái | Xong, đã chạy bằng trình duyệt thật trên dữ liệu mẫu |
+| Đặt lịch hẹn kiểm tra trùng giờ (QT-05, khóa dòng kỹ thuật viên), cập nhật trạng thái (QT-01) | Xong (TD-15) |
 | Dừng backend → thông báo lỗi + nút Thử lại; token hết hạn → về trang Đăng nhập | Xong |
 | Tìm `fetch(` trong `src/frontend/src/pages/` | Không có kết quả |
-| Số test | 58: 54 chạy không cần CSDL (15 + 15 backend, 24 giao diện), 4 tích hợp cần `TEST_DATABASE_URL` |
-| Đặt lịch hẹn (QT-05), cập nhật trạng thái, tổng quan khối lượng, thông báo | **Chưa – đã cắt** (TD-15) |
+| Số test | 90: 83 chạy không cần CSDL (41 backend, 42 giao diện), 7 tích hợp cần `TEST_DATABASE_URL` |
+| Thông báo SMS / email lịch hẹn cho khách (FR07, US07) | **Chưa – đã cắt** (TD-15) |
 | Thử dựng trên clone mới | _(ghi ngày và kết quả sau khi chạy `bash scripts/thu-clone-moi.sh`)_ |
 
 **Quyết định kỹ thuật / lỗi đã gặp:** xem [thay-doi-thiet-ke.md](docs/thay-doi-thiet-ke.md) (TD-14 đến TD-16). _(Bổ sung lỗi thực tế gặp trên máy, ví dụ cổng bị chiếm, sai mật khẩu DB.)_

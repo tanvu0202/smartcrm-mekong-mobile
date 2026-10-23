@@ -19,6 +19,9 @@ Lỗi luôn có dạng `{ "error": { "code": "...", "message": "...", "details":
 | POST | /tickets/{id}/assign | Phân công **lần đầu** (chỉ phiếu MOI → DA_PHAN_CONG) | 200 `{ticket, log, warnings}` | 400, 404, 409, 422 |
 | POST | /tickets/{id}/reassign | **Đổi** KTV (QT-04): bắt buộc `reason`; phiếu DANG_XU_LY cần `confirm:true` | 200 `{ticket, log, warnings}` | 400, 404, 409, 422 |
 | GET | /tickets/{id}/history | Lịch sử thay đổi từ `ticket_log` | 200 | 404 |
+| POST | /tickets/{id}/status | Chuyển trạng thái `{status}`: DA_PHAN_CONG → DANG_XU_LY → HOAN_TAT (QT-01); ghi `ticket_log` (DOI_TRANG_THAI) | 200 `{ticket, log}` | 400, 403, 404, 409 `STATUS_SKIP` / `INVALID_TRANSITION` |
+| GET | /tickets/{id}/appointments | *(quản lý)* Lịch hẹn của phiếu | 200 `{data:[{appointment_id, appointment_type, start_time, end_time}]}` | 404 |
+| POST | /tickets/{id}/appointments | *(quản lý)* Đặt lịch hẹn `{type: GIAO\|NHAN, startTime, endTime}` (QT-05) | 201 `{data}` | 400, 404, 409 `APPOINTMENT_OVERLAP` / `TICKET_NOT_ASSIGNED` / `TICKET_CLOSED` |
 
 ## POST /tickets (body)
 ```json
@@ -41,7 +44,11 @@ Người thực hiện (`ticket_log.changed_by`) lấy từ token, không nhận
 | 409 | TICKET_NOT_ASSIGNED | `reassign` khi phiếu chưa có KTV | QT-02 |
 | 409 | ALREADY_ASSIGNED | gán lại đúng KTV hiện tại | QT-02 |
 | 409 | CONFIRM_REQUIRED | `reassign` phiếu DANG_XU_LY mà thiếu `confirm:true` | QT-04, TD-10 |
-| 409 | TICKET_CLOSED | phiếu HOAN_TAT | QT-01 |
+| 409 | TICKET_CLOSED | phiếu HOAN_TAT (cả khi đổi KTV và khi đặt lịch hẹn) | QT-01 |
+| 409 | STATUS_SKIP | `status` nhảy bước: DA_PHAN_CONG → HOAN_TAT, thông báo "Phải chuyển qua Đang xử lý trước" | QT-01, US05 |
+| 409 | INVALID_TRANSITION | chuyển trạng thái không hợp lệ (lùi bước, trùng trạng thái) | QT-01 |
+| 409 | APPOINTMENT_OVERLAP | kỹ thuật viên của phiếu đã có lịch `DA_DAT` chồng giờ (hai lịch chỉ chạm đầu mút thì hợp lệ) | QT-05, US04 |
+| 409 | TICKET_NOT_ASSIGNED | đặt lịch hẹn khi phiếu chưa có kỹ thuật viên | QT-05 |
 | 422 | TECH_OTHER_CENTER / TECH_INVALID | KTV khác trung tâm / không tồn tại / ngừng hoạt động | QT-03 |
 
 Phản hồi 200 có thể kèm `warnings:[{code:"TECH_OVERLOADED"}]` khi KTV đạt ≥ 10 phiếu mở sau lần gán này (QT-06 – chỉ cảnh báo). Đổi trạng thái phiếu và ghi `ticket_log` xảy ra trong **một transaction**, dòng phiếu được khóa bằng `SELECT … FOR UPDATE` nên các yêu cầu đồng thời xếp hàng (NFR05).
@@ -57,8 +64,10 @@ Phản hồi 200 có thể kèm `warnings:[{code:"TECH_OVERLOADED"}]` khi KTV đ
 | Vai trò | Được phép |
 |---|---|
 | QUAN_LY | tất cả endpoint |
-| KTV | `GET /tickets` (server chỉ trả phiếu của chính họ), `GET /tickets/{id}` (chỉ phiếu của mình), `/auth/*` |
+| KTV | `GET /tickets` (server chỉ trả phiếu của chính họ), `GET /tickets/{id}` (chỉ phiếu của mình), `POST /tickets/{id}/status` (chỉ phiếu của mình, ngược lại 403), `/auth/*` |
 
 Danh sách phiếu trả mảng trong `{data}`; tên trường giữ snake_case (`ticket_id`, `due_date`…), giao diện chuyển sang camelCase ở một nơi duy nhất (`src/frontend/src/api/contract.js`). `log_id` là bigint nên là chuỗi.
 
-*Chưa làm ở Sprint 1 và 2:* đặt lịch hẹn (`/appointments`), cập nhật trạng thái DANG_XU_LY → HOAN_TAT, tổng quan khối lượng (xem README mục 6 và TD-15).
+`GET /tickets` trả thêm `appointment_start` (giờ bắt đầu sớm nhất trong các lịch `DA_DAT` của phiếu, hoặc `null`) cho cột "Lịch hẹn" của M3. Đặt lịch hẹn khóa dòng phiếu và dòng kỹ thuật viên (`SELECT … FOR UPDATE`) nên hai lần đặt cùng lúc cho một kỹ thuật viên xếp hàng và lần sau bị `APPOINTMENT_OVERLAP`.
+
+*Chưa làm:* gửi thông báo SMS / email lịch hẹn cho khách (FR07, US07; xem README mục 6 và TD-15).
