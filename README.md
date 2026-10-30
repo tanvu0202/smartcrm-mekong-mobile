@@ -32,12 +32,12 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 
 | Bước | Lệnh                                                                                                     | Kết quả mong đợi                                                                   |
 | ---- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 1    | `git clone https://github.com/tanvu0202/smartcrm-mekong-mobile.git && cd smartcrm-mekong-mobile`         | Có thư mục dự án                                                                   |
+| 1    | `git clone --branch v0.2 https://github.com/tanvu0202/smartcrm-mekong-mobile.git && cd smartcrm-mekong-mobile`         | Có thư mục dự án                                                                   |
 | 2    | `cp .env.example .env` rồi mở `.env` điền `DB_USER`, `DB_PASSWORD`, `AUTH_SECRET` (một chuỗi dài bất kỳ) | Có file `.env` (đã bị git bỏ qua, **không commit**)                                |
 | 3    | `npm run install:all`                                                                                    | Cài thư viện cho backend và giao diện, không báo `ERR!`                            |
 | 4    | `npm run db:create`                                                                                      | `Đã tạo database "smartcrm"` (hoặc `đã có – bỏ qua`)                               |
-| 5    | `npm run migrate`                                                                                        | `đã chạy 001_…`, `đã chạy 002_…` (chạy lại thì `bỏ qua`)                           |
-| 6    | `npm test`                                                                                               | `pass 83`, `fail 0` (7 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
+| 5    | `npm run migrate`                                                                                        | `đã chạy 001_…`, `đã chạy 002_…`, `đã chạy 003_…` (chạy lại thì `bỏ qua`)                           |
+| 6    | `npm test`                                                                                               | `pass 92`, `fail 0` (8 test tích hợp được bỏ qua nếu chưa đặt `TEST_DATABASE_URL`) |
 | 7    | `npm start` (cửa sổ terminal 1)                                                                          | `Mekong L4 API chạy tại http://localhost:3000`                                     |
 | 8    | `npm run web` (cửa sổ terminal 2)                                                                        | Mở http://localhost:5173 → trang Đăng nhập                                         |
 
@@ -61,7 +61,13 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 
 **Gọi thử API bằng curl:** `bash scripts/demo-curl.sh` (tự đăng nhập, ghi kết quả vào `docs/ket-qua-chay/`).
 
-**Chạy cả 7 test tích hợp trên PostgreSQL thật:** `npm run test:full` (tự đọc thông tin CSDL từ `.env`) → `pass 90`.
+**CRUD hai thực thể bằng curl:** cũng trong `bash scripts/demo-curl.sh` — phiếu (tạo 201 · đọc 200 · sửa 200 · sai dữ liệu 400 · xóa 204 · đọc lại 404) và lịch hẹn (tạo 201 · đọc 200 · sửa 200 · sai dữ liệu 400 · hủy 204 · hủy lần nữa 409). Thêm `COMPACT=1` để rút gọn dòng, `PAUSE=1` để dừng chụp màn hình.
+
+**Chạy lại migration / seed không nhân đôi dữ liệu:** `npm run migrate` lần hai báo `bỏ qua`; `node scripts/dem-dong.js --seed-lai` chạy lại cả file seed rồi đếm dòng, số dòng không đổi.
+
+**Trước khi nộp:** `bash scripts/kiem-tra-truoc-khi-nop.sh` (bảy việc dọn dẹp) · sau khi đẩy thẻ: `bash scripts/thu-clone-tag.sh` (clone đúng `v0.2`, dựng, migrate hai lần, chạy test).
+
+**Chạy cả 8 test tích hợp trên PostgreSQL thật:** `npm run test:full` (tự đọc thông tin CSDL từ `.env`) → `pass 100`.
 
 **Lỗi thường gặp:**
 
@@ -83,9 +89,9 @@ Chạy trong Git Bash hoặc terminal của VS Code. Trên Windows PowerShell ch
 | Công cụ       | Postman/curl, Git, `node:test`                                                                      |
 
 ```text
-├── db/migrations/                  # L4 Dữ liệu: 001 tạo bảng (DDL của BT1), 002 dữ liệu danh mục
+├── db/migrations/                  # L4 Dữ liệu: 001 tạo bảng (DDL của BT1), 002 dữ liệu danh mục, 003 chỉ mục duy nhất cho lịch hẹn còn hiệu lực
 ├── docs/                           # SRS, api-contract, thay-doi-thiet-ke, ai-disclosure, diagrams/, ket-qua-chay/
-├── scripts/                        # demo-curl.sh, thu-clone-moi.sh
+├── scripts/                        # demo-curl.sh, thu-clone-moi.sh, thu-clone-tag.sh, kiem-tra-truoc-khi-nop.sh, chay-minh-chung.sh, dem-dong.js
 ├── src/
 │   ├── backend/
 │   │   ├── index.js                # điểm vào, lắp ráp các lớp
@@ -114,9 +120,9 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 
 ## 5. Tài liệu
 
-[SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
+[SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
 
-## 6. Trạng thái hiện tại (Sprint 2 – Buổi 10, 23/10/2026)
+## 6. Trạng thái hiện tại (Bài tập 2 – Buổi 12, 30/10/2026, thẻ `v0.2`)
 
 | Hạng mục                                                                                                               | Trạng thái                                                                                                                                                                                                                                                       |
 | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -127,7 +133,7 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 | Đặt lịch hẹn kiểm tra trùng giờ (QT-05, khóa dòng kỹ thuật viên), cập nhật trạng thái (QT-01)                          | Xong (TD-15)                                                                                                                                                                                                                                                     |
 | Dừng backend → thông báo lỗi + nút Thử lại; token hết hạn → về trang Đăng nhập                                         | Xong                                                                                                                                                                                                                                                             |
 | Tìm `fetch(` trong `src/frontend/src/pages/`                                                                           | Không có kết quả                                                                                                                                                                                                                                                 |
-| Số test                                                                                                                | 90: 83 chạy không cần CSDL (41 backend, 42 giao diện), 7 tích hợp cần `TEST_DATABASE_URL`                                                                                                                                                                        |
+| Số test | 100: 92 chạy không cần CSDL (50 backend, 42 giao diện), 8 tích hợp cần `TEST_DATABASE_URL` |
 | Thông báo SMS / email lịch hẹn cho khách (FR07, US07)                                                                  | **Chưa – đã cắt** (TD-15)                                                                                                                                                                                                                                        |
 | Thử dựng trên clone mới                                                                                                | _(Thử dựng trên clone mới ngày 23/10/2026: đạt cả 8 bước (clone nhánh dev, cài thư viện, tạo database, migrate, npm test, chạy backend, đăng nhập, dựng giao diện). Nhật ký: docs/ket-qua-chay/thu-clone-moi.txt, ảnh: docs/ket-qua-chay/24-thu-clone-moi.png.)_ |
 

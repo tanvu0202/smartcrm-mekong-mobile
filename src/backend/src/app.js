@@ -4,6 +4,7 @@ const { createAuthController } = require('./controllers/authController');
 const { createLookupController } = require('./controllers/lookupController');
 const { createTicketRoutes } = require('./routes/ticketRoutes');
 const { createLookupRoutes } = require('./routes/lookupRoutes');
+const { createAppointmentRoutes } = require('./routes/appointmentRoutes');
 const { requireAuth, requireRole } = require('./middleware/auth');
 const { cors } = require('./middleware/cors');
 const { errorHandler } = require('./middleware/errorHandler');
@@ -26,7 +27,9 @@ function createApp({ ticketService, authService, checkDb, corsOrigins = [] }) {
   const auth = requireAuth(authService);
   const requireManager = requireRole('QUAN_LY');
   app.get('/api/auth/me', auth, authController.me);
-  app.use('/api/tickets', auth, createTicketRoutes(createTicketController(ticketService), { requireManager }));
+  const ticketController = createTicketController(ticketService);
+  app.use('/api/tickets', auth, createTicketRoutes(ticketController, { requireManager }));
+  app.use('/api/appointments', auth, createAppointmentRoutes(ticketController, { requireManager }));
   app.use('/api', auth, createLookupRoutes(createLookupController(ticketService), { requireManager }));
 
   app.use((req, res) => res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Không có route này' } }));

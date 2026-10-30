@@ -22,6 +22,9 @@ Lỗi luôn có dạng `{ "error": { "code": "...", "message": "...", "details":
 | POST | /tickets/{id}/status | Chuyển trạng thái `{status}`: DA_PHAN_CONG → DANG_XU_LY → HOAN_TAT (QT-01); ghi `ticket_log` (DOI_TRANG_THAI) | 200 `{ticket, log}` | 400, 403, 404, 409 `STATUS_SKIP` / `INVALID_TRANSITION` |
 | GET | /tickets/{id}/appointments | *(quản lý)* Lịch hẹn của phiếu | 200 `{data:[{appointment_id, appointment_type, start_time, end_time}]}` | 404 |
 | POST | /tickets/{id}/appointments | *(quản lý)* Đặt lịch hẹn `{type: GIAO\|NHAN, startTime, endTime}` (QT-05) | 201 `{data}` | 400, 404, 409 `APPOINTMENT_OVERLAP` / `TICKET_NOT_ASSIGNED` / `TICKET_CLOSED` |
+| GET | /appointments/{id} | *(quản lý)* Chi tiết một lịch hẹn (kể cả lịch đã hủy) | 200 `{data}` | 400, 404 |
+| PUT | /appointments/{id} | *(quản lý)* Sửa `{type, startTime, endTime}` của lịch `DA_DAT`; kiểm tra trùng giờ (QT-05) nhưng **bỏ qua chính lịch đang sửa** (TD-18) | 200 `{data}` | 400, 404, 409 `APPOINTMENT_CANCELLED` / `TICKET_CLOSED` / `APPOINTMENT_OVERLAP` |
+| DELETE | /appointments/{id} | *(quản lý)* **Hủy** lịch hẹn: xóa mềm (`status = DA_HUY`, dòng được giữ lại, khung giờ được giải phóng) | 204 | 400, 404, 409 `APPOINTMENT_CANCELLED` |
 
 ## POST /tickets (body)
 ```json
@@ -48,6 +51,7 @@ Người thực hiện (`ticket_log.changed_by`) lấy từ token, không nhận
 | 409 | STATUS_SKIP | `status` nhảy bước: DA_PHAN_CONG → HOAN_TAT, thông báo "Phải chuyển qua Đang xử lý trước" | QT-01, US05 |
 | 409 | INVALID_TRANSITION | chuyển trạng thái không hợp lệ (lùi bước, trùng trạng thái) | QT-01 |
 | 409 | APPOINTMENT_OVERLAP | kỹ thuật viên của phiếu đã có lịch `DA_DAT` chồng giờ (hai lịch chỉ chạm đầu mút thì hợp lệ) | QT-05, US04 |
+| 409 | APPOINTMENT_CANCELLED | sửa hoặc hủy một lịch hẹn đã hủy trước đó | QT-05, TD-18 |
 | 409 | TICKET_NOT_ASSIGNED | đặt lịch hẹn khi phiếu chưa có kỹ thuật viên | QT-05 |
 | 422 | TECH_OTHER_CENTER / TECH_INVALID | KTV khác trung tâm / không tồn tại / ngừng hoạt động | QT-03 |
 

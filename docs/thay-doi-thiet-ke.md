@@ -134,3 +134,11 @@ TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên v
 - Quyết định : SỬA
 - Lý do : Lần chạy `scripts/thu-clone-moi.sh` đầu tiên (23/10/2026) báo lỗi ở bước 3: bản clone không có script `install:all`. Nguyên nhân là script clone nhánh mặc định của GitHub, không phải nhánh `dev` đang làm, nên lấy phải mã cũ. Lần sau lỗi ở bước 5 với thông báo "Device or resource busy" khi ghi nhật ký `thu-clone-moi.txt` vào thư mục `docs/` (Windows khóa file đang mở). Ngoài ra `npm --prefix src/frontend install` từng báo lỗi trên Windows.
 - Ảnh hưởng : `scripts/thu-clone-moi.sh` clone đúng nhánh đang làm (`git clone -b`), ghi nhật ký vào thư mục tạm rồi chép vào `docs/ket-qua-chay/thu-clone-moi.txt` khi kết thúc. `package.json`: `install:all` dùng `cd src/frontend && npm install` thay cho `--prefix`. Thêm `package-lock.json` của backend và giao diện để cài đúng phiên bản. Lần chạy lại sau khi sửa đạt cả 8 bước (docs/ket-qua-chay/24-thu-clone-moi.png).
+
+## Thay đổi phát sinh khi hoàn thiện Bài tập 2 (Buổi 12, ngày 30/10/2026)
+
+### TD-18 Bổ sung CRUD đầy đủ cho lịch hẹn (thực thể thứ hai); hủy là xóa mềm
+- Phản hồi của GV : Không có (tự phát hiện khi đối chiếu yêu cầu Bài tập 2, track SE: ít nhất hai thực thể có đủ tạo / đọc / sửa / xóa).
+- Quyết định      : SỬA
+- Lý do           : Sau Sprint 2 chỉ phiếu có CRUD đầy đủ; lịch hẹn mới chỉ tạo và liệt kê theo phiếu. Hủy lịch là xóa mềm (`status = DA_HUY`) để giữ vết và vì QT-05 chỉ so với lịch `DA_DAT`. Xóa mềm làm lộ lỗi ràng buộc duy nhất (BUG-05) nên thêm migration 003.
+- Ảnh hưởng       : Thêm `GET`, `PUT`, `DELETE /appointments/{id}` (chỉ quản lý). `PUT` kiểm tra QT-05 nhưng bỏ qua chính lịch đang sửa; từ chối lịch đã hủy (`APPOINTMENT_CANCELLED`) và phiếu đã hoàn tất (`TICKET_CLOSED`). Migration `003_appointment_unique_active.sql` thay ràng buộc duy nhất bằng chỉ mục một phần cho lịch `DA_DAT`. Giới hạn đã biết: giao diện chưa có nút sửa / hủy lịch hẹn, hai thao tác này kiểm chứng bằng curl (`scripts/demo-curl.sh`). Có test ở `tests/appointmentCrud.test.js` và `tests/integration/appointment.test.js`. `docs/api-contract.md` đã cập nhật.

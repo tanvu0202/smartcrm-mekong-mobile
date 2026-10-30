@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
-# Gọi thử API và lưu kết quả vào docs/ket-qua-chay/curl-output.txt (chụp màn hình terminal này để nộp).
+# Gọi thử API: đăng nhập, phân công, CRUD PHIẾU và CRUD LỊCH HẸN. Kết quả lưu vào docs/ket-qua-chay/curl-output.txt (chụp màn hình terminal này để nộp).
 # Cần: server đang chạy (npm start), đã `npm run migrate`, có node. ID phiếu/KTV lấy động nên không phụ thuộc thứ tự seed.
+# Tùy chọn (biến môi trường):
+#   COMPACT=1   rút gọn mỗi dòng kết quả (~170 ký tự) để chụp màn hình không bị tràn dòng
+#   PAUSE=1     dừng sau từng phần để chụp màn hình, nhấn Enter để đi tiếp
+#   DEMO_OUT=…  ghi kết quả vào tệp khác (mặc định docs/ket-qua-chay/curl-output.txt)
 B=${BASE:-http://localhost:3000/api}
-OUT="$(dirname "$0")/../docs/ket-qua-chay/curl-output.txt"
+OUT="${DEMO_OUT:-$(dirname "$0")/../docs/ket-qua-chay/curl-output.txt}"
 js() { node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log($1)})"; }
 # In lệnh ra màn hình nhưng che token để không lọt vào file kết quả sẽ commit
-run() { echo; echo "\$ $*" | sed "s/$TOKEN/<token>/g"; "$@" -s -w '\nHTTP %{http_code}\n'; }
+clip() { if [ "${COMPACT:-0}" = 1 ]; then cut -c1-170 | awk '{ print (length($0) >= 170 ? $0 "…" : $0) }'; else cat; fi; }
+pause() { if [ "${PAUSE:-0}" = 1 ]; then read -r -p ">>> Chụp màn hình phần vừa hiện, rồi nhấn Enter để đi tiếp... " _ </dev/tty; fi; }
+run() { echo; echo "\$ $*" | sed "s/$TOKEN/<token>/g" | clip; "$@" -s -w '\nHTTP %{http_code}\n' | clip; }
+# runv: như run nhưng giữ lại phần thân JSON trong biến LAST (để lấy id vừa tạo mà vẫn hiện đủ kết quả lên màn hình)
+runv() { echo; echo "\$ $*" | sed "s/$TOKEN/<token>/g" | clip; local out; out=$("$@" -s -w '\nHTTP %{http_code}\n'); echo "$out" | clip; LAST=$(echo "$out" | sed '$d'); }
 
 # Đăng nhập (Sprint 2): mọi endpoint trừ /health và /auth/login cần "Authorization: Bearer <token>"
 LOGIN=$(curl -s -X POST "$B/auth/login" -H 'Content-Type: application/json' \
@@ -36,4 +44,36 @@ JSON='Content-Type: application/json'
   run curl -X POST "$B/tickets/$TID/reassign" -H "$JSON" -H "$AUTH" -d "{\"technicianId\":$KTV2}"
   run curl -X POST "$B/tickets/$TID/reassign" -H "$JSON" -H "$AUTH" -d "{\"technicianId\":$KTV2,\"reason\":\"KTV cu nghi om\"}"
   run curl "$B/tickets/$TID/history" -H "$AUTH"
+
+  # ===== CRUD thực thể 1: PHIẾU (ticket) – tạo · đọc · sửa · xóa =====
+  pause
+  echo; echo "# ===== CRUD PHIẾU: tạo (201) → đọc (200) → sửa (200) → sửa dữ liệu sai (400) → xóa (204) → đọc lại (404) ====="
+  runv curl -X POST "$B/tickets" -H "$JSON" -H "$AUTH" \
+    -d "{\"centerId\":1,\"customerName\":\"Khach CRUD\",\"customerPhone\":\"0912888888\",\"deviceModel\":\"Galaxy S22\",\"issueGroup\":\"PIN\",\"priority\":2,\"issueDescription\":\"Chai pin\",\"dueDate\":\"$DUE\"}"
+  T2=$(echo "$LAST" | js 'j.data.ticket_id')
+  echo "# Phiếu CRUD: $T2"
+  run curl "$B/tickets/$T2" -H "$AUTH"
+  # PUT thay toàn bộ thông tin phiếu (chỉ khi còn MOI) nên gửi đủ các trường
+  FULL="\"centerId\":1,\"deviceModel\":\"Galaxy S22\",\"issueGroup\":\"PIN\",\"priority\":2,\"dueDate\":\"$DUE\""
+  run curl -X PUT "$B/tickets/$T2" -H "$JSON" -H "$AUTH" -d "{$FULL,\"customerName\":\"Khach CRUD (da sua)\",\"customerPhone\":\"0912888888\",\"issueDescription\":\"Chai pin, phong pin\"}"
+  echo; echo "# Số điện thoại sai định dạng → 400, nêu rõ trường nào sai"
+  run curl -X PUT "$B/tickets/$T2" -H "$JSON" -H "$AUTH" -d "{$FULL,\"customerName\":\"Khach CRUD\",\"customerPhone\":\"abc\",\"issueDescription\":\"Chai pin\"}"
+  run curl -X DELETE "$B/tickets/$T2" -H "$AUTH"
+  run curl "$B/tickets/$T2" -H "$AUTH"
+
+  # ===== CRUD thực thể 2: LỊCH HẸN (appointment) – tạo · đọc · sửa · hủy (xóa mềm) =====
+  pause
+  echo; echo "# ===== CRUD LỊCH HẸN (của phiếu $TID đã phân công): tạo (201) → đọc (200) → sửa (200) → hủy (204) → hủy lần nữa (409) ====="
+  DAY=$(node -e "console.log(new Date(Date.now()+(30+Math.floor(Math.random()*300))*864e5).toISOString().slice(0,10))")
+  runv curl -X POST "$B/tickets/$TID/appointments" -H "$JSON" -H "$AUTH" \
+    -d "{\"type\":\"GIAO\",\"startTime\":\"${DAY}T02:00:00Z\",\"endTime\":\"${DAY}T03:00:00Z\"}"
+  AID=$(echo "$LAST" | js 'j.data.appointment_id')
+  echo "# Lịch hẹn: $AID (ngày $DAY)"
+  run curl "$B/appointments/$AID" -H "$AUTH"
+  run curl -X PUT "$B/appointments/$AID" -H "$JSON" -H "$AUTH" -d "{\"type\":\"NHAN\",\"startTime\":\"${DAY}T02:30:00Z\",\"endTime\":\"${DAY}T03:30:00Z\"}"
+  echo; echo "# Dữ liệu sai: giờ kết thúc không sau giờ bắt đầu → 400"
+  run curl -X PUT "$B/appointments/$AID" -H "$JSON" -H "$AUTH" -d "{\"type\":\"NHAN\",\"startTime\":\"${DAY}T04:00:00Z\",\"endTime\":\"${DAY}T03:00:00Z\"}"
+  run curl -X DELETE "$B/appointments/$AID" -H "$AUTH"
+  run curl "$B/appointments/$AID" -H "$AUTH"
+  run curl -X DELETE "$B/appointments/$AID" -H "$AUTH"
 } | tee "$OUT"

@@ -150,7 +150,7 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, 
 
     /**
      * Phân công LẦN ĐẦU: chỉ khi phiếu đang MOI (MOI → DA_PHAN_CONG).
-     * Hai người cùng phân công một phiếu: người đến sau chờ khóa FOR UPDATE rồi nhận 409 TICKET_ALREADY_ASSIGNED
+     * Hai người cùng phân công một phiếu: người đến sau chờ khóa FOR UPDATE rồi nhận lỗi xung đột TICKET_ALREADY_ASSIGNED
      * (ngoại lệ 5b của UC01). Toàn bộ trong 1 transaction; ticket_log ghi cùng transaction (NFR05).
      */
     assign(id, input = {}) {
@@ -209,6 +209,42 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, 
     },
 
     listAppointments: async (id) => { await getOrThrow(db, id); return appointmentRepo.findByTicket(db, id); },
+
+    /** Đọc một lịch hẹn theo mã (kể cả lịch đã hủy, để biết trạng thái). */
+    async getAppointment(id) {
+      const a = await appointmentRepo.findById(db, id);
+      if (!a) throw notFound(`Không tìm thấy lịch hẹn #${id}`);
+      return a;
+    },
+
+    /**
+     * Sửa loại / khung giờ của một lịch hẹn còn hiệu lực. Kiểm tra trùng giờ lại theo QT-05 nhưng bỏ qua chính lịch này
+     * (nếu không, dời lịch 09:00–10:00 sang 09:30–10:30 sẽ tự trùng với chính nó).
+     */
+    async updateAppointment(id, body) {
+      const a = validateAppointmentInput(body);
+      return withTransaction(async (conn) => {
+        const cur = await appointmentRepo.findById(conn, id, { forUpdate: true });
+        if (!cur) throw notFound(`Không tìm thấy lịch hẹn #${id}`);
+        if (cur.status === 'DA_HUY') throw conflict('Lịch hẹn đã hủy, không sửa được', 'APPOINTMENT_CANCELLED');
+        const t = await getOrThrow(conn, cur.ticket_id, { forUpdate: true });
+        if (t.status === 'HOAN_TAT') throw conflict('Phiếu đã hoàn tất, không sửa lịch hẹn', 'TICKET_CLOSED');
+        await technicianRepo.findById(conn, t.technician_id, { forUpdate: true });
+        const clash = await appointmentRepo.findOverlap(conn, t.technician_id, a.startTime, a.endTime, id);
+        if (clash) throw conflict('Kỹ thuật viên đã có lịch trong khung giờ này (trùng lịch)', 'APPOINTMENT_OVERLAP'); // QT-05
+        return appointmentRepo.update(conn, id, a);
+      });
+    },
+
+    /** Hủy lịch hẹn (xóa mềm). Hủy lịch đã hủy rồi → báo xung đột (APPOINTMENT_CANCELLED) để người gọi biết thao tác trước đó đã có hiệu lực. */
+    async cancelAppointment(id) {
+      return withTransaction(async (conn) => {
+        const cur = await appointmentRepo.findById(conn, id, { forUpdate: true });
+        if (!cur) throw notFound(`Không tìm thấy lịch hẹn #${id}`);
+        if (cur.status === 'DA_HUY') throw conflict('Lịch hẹn đã được hủy trước đó', 'APPOINTMENT_CANCELLED');
+        return appointmentRepo.cancel(conn, id);
+      });
+    },
 
     history: async (id) => { await getOrThrow(db, id); return logRepo.findByTicket(db, id); },
   };
