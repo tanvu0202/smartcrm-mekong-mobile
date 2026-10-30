@@ -1,6 +1,7 @@
 // Dùng chung cho test tích hợp: cần PostgreSQL thật đã `npm run migrate`.
 // Bật bằng: TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/smartcrm npm run test:integration
 // Không có biến này thì các test tích hợp tự bỏ qua (npm test vẫn xanh).
+const crypto = require('node:crypto');
 const url = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(url);
 
@@ -34,12 +35,13 @@ function load() {
 /** Tạo trung tâm + kỹ thuật viên riêng cho từng test (tên/điện thoại có hậu tố ngẫu nhiên) để không đụng dữ liệu seed. */
 async function makeCenter(pool, tag) {
   const { rows } = await pool.query(
-    `INSERT INTO service_center(name,address) VALUES ($1,'địa chỉ test') RETURNING center_id`, [`TEST-${tag}-${Date.now()}`]);
+    `INSERT INTO service_center(name,address) VALUES ($1,'địa chỉ test') RETURNING center_id`, [`TEST-${tag}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`]);
   return rows[0].center_id;
 }
 let seq = 0;
 async function makeTech(pool, centerId, { skills = {}, active = true } = {}) {
-  const phone = `09${Date.now().toString().slice(-7)}${++seq}`.slice(0, 20);
+  // Các file test chạy SONG SONG trong các tiến trình riêng, mỗi tiến trình đếm seq từ 0: dùng số ngẫu nhiên mật mã để không trùng.
+  const phone = `09${crypto.randomInt(0, 1e9).toString().padStart(9, '0')}`;
   const { rows } = await pool.query(
     `INSERT INTO technician(center_id,full_name,phone,is_active) VALUES ($1,$2,$3,$4) RETURNING technician_id`,
     [centerId, `KTV test ${phone}`, phone, active]);
