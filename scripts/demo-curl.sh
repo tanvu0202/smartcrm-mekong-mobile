@@ -9,7 +9,7 @@ B=${BASE:-http://localhost:3000/api}
 OUT="${DEMO_OUT:-$(dirname "$0")/../docs/ket-qua-chay/curl-output.txt}"
 js() { node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log($1)})"; }
 # In lệnh ra màn hình nhưng che token để không lọt vào file kết quả sẽ commit
-clip() { if [ "${COMPACT:-0}" = 1 ]; then cut -c1-170 | awk '{ print (length($0) >= 170 ? $0 "…" : $0) }'; else cat; fi; }
+clip() { if [ "${COMPACT:-0}" = 1 ]; then node -e 'let s="";process.stdin.setEncoding("utf8");process.stdin.on("data",d=>s+=d).on("end",()=>{process.stdout.write(s.split("\n").map(l=>{const a=[...l];return a.length>=170?a.slice(0,170).join("")+"…":l}).join("\n"))})'; else cat; fi; }
 pause() { if [ "${PAUSE:-0}" = 1 ]; then read -r -p ">>> Chụp màn hình phần vừa hiện, rồi nhấn Enter để đi tiếp... " _ </dev/tty; fi; }
 run() { echo; echo "\$ $*" | sed "s/$TOKEN/<token>/g" | clip; "$@" -s -w '\nHTTP %{http_code}\n' | clip; }
 # runv: như run nhưng giữ lại phần thân JSON trong biến LAST (để lấy id vừa tạo mà vẫn hiện đủ kết quả lên màn hình)
@@ -76,4 +76,5 @@ JSON='Content-Type: application/json'
   run curl -X DELETE "$B/appointments/$AID" -H "$AUTH"
   run curl "$B/appointments/$AID" -H "$AUTH"
   run curl -X DELETE "$B/appointments/$AID" -H "$AUTH"
+  pause
 } | tee "$OUT"
