@@ -26,7 +26,7 @@ function createAuthService({ users, secret, ttlSeconds, technicianRepo, db, now 
       return { token, expiresIn: ttlSeconds, user: { username: user.username, fullName, role: user.role, technicianId } };
     },
 
-    /** Header "Authorization: Bearer <token>" → thông tin người dùng, hoặc ném 401. */
+    /** Header "Authorization: Bearer <token>" → thông tin người dùng, hoặc ném lỗi chưa xác thực (UNAUTHENTICATED). */
     authenticate(header) {
       const m = /^Bearer\s+(\S+)$/i.exec(typeof header === 'string' ? header.trim() : '');
       if (!m) throw unauthorized('Chưa đăng nhập');

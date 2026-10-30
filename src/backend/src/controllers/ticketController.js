@@ -43,6 +43,10 @@ function createTicketController(service) {
     createAppointment: withId(async (req, res, id) => res.status(201).json({ data: await service.createAppointment(id, req.body) })),
     appointments: withId(async (req, res, id) => res.json({ data: await service.listAppointments(id) })),
     history: withId(async (req, res, id) => res.json({ data: await service.history(id) })),
+    // Lịch hẹn (thực thể thứ hai có đủ CRUD): đường dẫn /appointments/:id
+    appointment: withId(async (req, res, id) => res.json({ data: await service.getAppointment(id) })),
+    updateAppointment: withId(async (req, res, id) => res.json({ data: await service.updateAppointment(id, req.body) })),
+    cancelAppointment: withId(async (req, res, id) => { await service.cancelAppointment(id); res.status(204).end(); }),
   };
 }
 module.exports = { createTicketController };

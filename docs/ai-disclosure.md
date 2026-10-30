@@ -1,8 +1,8 @@
-# Khai báo sử dụng công cụ AI – Buổi 8 và Buổi 10
+# Khai báo sử dụng công cụ AI – Buổi 8, 10 và 12
 
 **Họ và tên:** Trần Tấn Vũ  
 **Mã số sinh viên:** 2374802010573  
-**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10)
+**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10) và 30/10/2026 (Buổi 12)
 
 **Cam kết:** Tôi đã đọc, kiểm tra và chịu trách nhiệm về toàn bộ nội dung nộp. Các công cụ AI được dùng nêu đầy đủ trong bảng dưới đây; phần không khai báo là do tôi tự thực hiện.
 
@@ -17,4 +17,9 @@
 | Trợ lý AI dạng chat (Claude) | `README.md` mục 3, `scripts/thu-clone-moi.sh`, `docs/thay-doi-thiet-ke.md` (TD-14..16), `docs/api-contract.md` | Yêu cầu soạn các bước dựng hệ thống, script thử clone mới, ghi phạm vi bị cắt và lý do | Tự chạy lại từng bước trên thư mục clone mới và ghi kết quả vào `docs/ket-qua-chay/` |
 | Trợ lý AI dạng chat (Claude) | `src/backend` (appointmentRepository, `ticketService` đặt lịch hẹn và đổi trạng thái, route `/status`, `/appointments`), `tests/appointmentStatus.test.js`, `tests/integration/appointment.test.js` | Yêu cầu hiện thực QT-05 (trùng lịch) và QT-01 (chuỗi trạng thái) để giao diện khớp wireframe BT1 | Chạy test; kiểm tra bằng hai phiên psql song song rằng khóa dòng kỹ thuật viên chặn đặt trùng (không khóa: 2 lịch, có khóa: 1 lịch) |
 | Trợ lý AI dạng chat (Claude) | `src/frontend/` (M1 thẻ tổng quan, lọc, phân trang; M2 khối lịch hẹn, hộp Có / Không; M3 cột Lịch hẹn, nút trạng thái; `lib/overview.js`, `paginate.js`, `datetime.js`), `tests/frontend/overview.test.mjs`, `datetime.test.mjs` | Yêu cầu sửa giao diện cho giống wireframe BT1 sau khi tôi nhận thấy bản đầu không giống | So từng màn với file `wireframe.drawio` của tôi; chạy lại luồng bằng trình duyệt thật; viết lại ca biên (đúng 4 giờ, nửa đêm, đúng 20 dòng) |
-| Không dùng AI | Nội dung nhận xét của giảng viên, quyết định SỬA/GIỮ, ảnh chụp kết quả chạy | – | Do tôi tự thực hiện |
+| Trợ lý AI dạng chat (Claude) | `src/backend` (appointmentRepository, `ticketService`, `ticketController`, `routes/appointmentRoutes.js`), `db/migrations/003_appointment_unique_active.sql` | Yêu cầu bổ sung CRUD đầy đủ cho lịch hẹn (thực thể thứ hai) và sửa ràng buộc duy nhất để đặt lại lịch sau khi hủy | Đọc lại từng lớp; chạy `npm run migrate` hai lần; chạy `bash scripts/demo-curl.sh` để gọi đủ tạo / đọc / sửa / hủy và các trường hợp 400, 404, 409 |
+| Trợ lý AI dạng chat (Claude) | `tests/appointmentCrud.test.js` (9 test), `tests/integration/appointment.test.js` (thêm 1 test) | Yêu cầu viết test cho dữ liệu hợp lệ, biên (chạm đầu mút, dời chồng lên chính nó) và không hợp lệ | Chạy `npm run test:full` → pass 100; đọc lại các ca biên; hoàn nguyên ràng buộc cũ để thấy test tích hợp lỗi `23505` trước khi có migration 003 |
+| Trợ lý AI dạng chat (Claude) | `scripts/kiem-tra-truoc-khi-nop.sh`, `scripts/chay-minh-chung.sh`, `scripts/thu-clone-tag.sh`, `scripts/dem-dong.js`, `scripts/proxy-cham.js`, `scripts/dat-lai-du-lieu-demo.js`, `scripts/demo-curl.sh` (phần CRUD), `.env.example` | Yêu cầu tự động hóa bảy việc dọn dẹp của Buổi 12, thử clone đúng thẻ `v0.2`, đếm dòng để chứng minh chạy lại migration không nhân đôi dữ liệu | Chạy từng script trên máy tôi và đọc kết quả; thử `thu-clone-tag.sh` sau khi đã đẩy thẻ lên GitHub |
+| Trợ lý AI dạng chat (Claude) | `docs/bug-log.md`, `docs/thay-doi-thiet-ke.md` (TD-17, TD-18), `docs/api-contract.md`, `README.md`, file PDF Bài tập 2 | Yêu cầu soạn nhật ký lỗi, ghi thay đổi thiết kế, cập nhật hợp đồng API và README, dàn trang báo cáo PDF | Đối chiếu từng con số (số test, mã lỗi, mã commit) với kết quả chạy trên máy tôi; sửa lại các chi tiết nhật ký lỗi cho đúng những gì tôi đã gặp |
+| Trợ lý AI dạng chat (Claude) | Ảnh giao diện dùng trong báo cáo Buổi 10 | Claude chạy giao diện trong môi trường của nó (trình duyệt tự động, PostgreSQL thật) và chụp lại các màn hình | Tôi đối chiếu với giao diện chạy trên máy tôi; ảnh minh chứng của Bài tập 2 (Buổi 12) là ảnh tôi tự chụp |
+| Không dùng AI | Nội dung nhận xét của giảng viên, quyết định SỬA/GIỮ; ảnh chụp terminal và giao diện của Bài tập 2 (Buổi 12) | – | Do tôi tự chạy lệnh và tự chụp màn hình trên máy của mình |
