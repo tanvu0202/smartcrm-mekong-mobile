@@ -1,0 +1,26 @@
+{
+  "id": "TC-09",
+  "type": "Bảo mật (phân quyền)",
+  "priority": "Cao",
+  "title": "Không đăng nhập / sai vai trò đều bị chặn",
+  "input": "Không token; KTV Hải xem phiếu của KTV Long; KTV Hải thử phân công; KTV Hải đổi trạng thái phiếu người khác",
+  "expected": "401, 403, 403, 403",
+  "bug": null,
+  "actual": "HTTP 401, 403, 403, 403",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 7143\",\"customerPhone\":\"0962905624\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":137,\"ticket_code\":\"BH-0103\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 7143\",\"customer_phone\":\"0962905624\",\"dev…",
+    "  → POST /tickets/137/assign   [Phân công]\n      gửi: {\"technicianId\":1}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":137,\"ticket_code\":\"BH-0103\",\"center_id\":1,\"technician_id\":1,\"customer_name\":\"TC khach 7143\",\"customer_phone\":\"0962905624\",\"devi…",
+    "  → GET /tickets   [Không token: xem danh sách]",
+    "  ← HTTP 401  {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Chưa đăng nhập\"}}",
+    "  → GET /tickets/137   [KTV Hải xem phiếu của Long]",
+    "  ← HTTP 403  {\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"Phiếu này không được giao cho bạn\"}}",
+    "  → POST /tickets/137/assign   [KTV Hải tự phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 403  {\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"Bạn không có quyền thực hiện thao tác này\"}}",
+    "  → POST /tickets/137/status   [KTV Hải đổi trạng thái phiếu của Long]\n      gửi: {\"status\":\"DANG_XU_LY\"}",
+    "  ← HTTP 403  {\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"Phiếu này không được giao cho bạn\"}}"
+  ],
+  "runAt": "2026-11-09T08:20:37.357Z"
+}

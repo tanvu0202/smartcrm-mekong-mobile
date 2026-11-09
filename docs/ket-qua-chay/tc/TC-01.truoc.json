@@ -1,0 +1,24 @@
+{
+  "id": "TC-01",
+  "type": "Luồng đúng",
+  "priority": "Cao",
+  "title": "Luồng chính: tạo phiếu → phân công → xử lý → hoàn tất",
+  "input": "Phiếu hợp lệ (priority 2, SĐT 10 số); KTV Hải xử lý phiếu của mình",
+  "expected": "Phiếu đi MOI → DA_PHAN_CONG → DANG_XU_LY → HOAN_TAT; lịch sử ghi đủ 3 dòng",
+  "bug": null,
+  "actual": "HTTP 200/200, trạng thái cuối HOAN_TAT, lịch sử 3 dòng",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 4678\",\"customerPhone\":\"0958289923\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":124,\"ticket_code\":\"BH-0090\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 4678\",\"customer_phone\":\"0958289923\",\"dev…",
+    "  → POST /tickets/124/assign   [Phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":124,\"ticket_code\":\"BH-0090\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 4678\",\"customer_phone\":\"0958289923\",\"devi…",
+    "  → POST /tickets/124/status   [KTV Hải: bắt đầu xử lý]\n      gửi: {\"status\":\"DANG_XU_LY\"}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":124,\"ticket_code\":\"BH-0090\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 4678\",\"customer_phone\":\"0958289923\",\"devi…",
+    "  → POST /tickets/124/status   [KTV Hải: hoàn tất]\n      gửi: {\"status\":\"HOAN_TAT\"}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":124,\"ticket_code\":\"BH-0090\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 4678\",\"customer_phone\":\"0958289923\",\"devi…",
+    "  → GET /tickets/124/history   [Xem lịch sử]",
+    "  ← HTTP 200  {\"data\":[{\"log_id\":\"163\",\"ticket_id\":124,\"action\":\"PHAN_CONG\",\"old_technician_id\":null,\"new_technician_id\":2,\"old_status\":\"MOI\",\"new_status\":\"DA_PHAN_…"
+  ],
+  "runAt": "2026-11-09T08:16:51.730Z"
+}

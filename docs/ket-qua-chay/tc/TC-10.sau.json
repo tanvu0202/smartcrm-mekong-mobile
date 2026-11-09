@@ -1,0 +1,20 @@
+{
+  "id": "TC-10",
+  "type": "Bảo mật / chất lượng dữ liệu",
+  "priority": "Cao",
+  "title": "Chuỗi kiểu SQL injection được lưu nguyên văn, bảng không bị ảnh hưởng",
+  "input": "customerName = \"Robert'); DROP TABLE ticket;--\"",
+  "expected": "201; đọc lại đúng nguyên văn; danh sách phiếu vẫn truy vấn được",
+  "bug": null,
+  "actual": "HTTP 201, lưu đúng nguyên văn=true, danh sách HTTP 200",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu với chuỗi độc]\n      gửi: {\"centerId\":1,\"customerName\":\"Robert'); DROP TABLE ticket;--\",\"customerPhone\":\"0967482621\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":341,\"ticket_code\":\"BH-0286\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"Robert'); DROP TABLE ticket;--\",\"customer_phone\":…",
+    "  → GET /tickets/341   [Đọc lại phiếu]",
+    "  ← HTTP 200  {\"data\":{\"ticket_id\":341,\"ticket_code\":\"BH-0286\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"Robert'); DROP TABLE ticket;--\",\"customer_phone\":…",
+    "  → GET /tickets   [Danh sách phiếu vẫn truy vấn được?]",
+    "  ← HTTP 200  {\"data\":[{\"ticket_id\":2,\"ticket_code\":\"BH-0001\",\"center_id\":1,\"technician_id\":3,\"customer_name\":\"Nguyễn Văn Hòa\",\"customer_phone\":\"0912000001\",\"device…"
+  ],
+  "runAt": "2026-11-09T08:45:52.637Z"
+}

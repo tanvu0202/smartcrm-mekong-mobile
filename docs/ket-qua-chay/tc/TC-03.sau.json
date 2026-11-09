@@ -1,0 +1,26 @@
+{
+  "id": "TC-03",
+  "type": "Biên (phía hợp lệ)",
+  "priority": "Cao",
+  "title": "Biên QT-05: hai lịch chỉ chạm đầu mút (10:00 = 10:00) KHÔNG bị coi là trùng",
+  "input": "Lịch A 02:00–03:00; lịch B 03:00–04:00 (cùng KTV)",
+  "expected": "Lịch B được tạo: 201",
+  "bug": null,
+  "actual": "HTTP 201",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 1081\",\"customerPhone\":\"0944501936\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":332,\"ticket_code\":\"BH-0277\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 1081\",\"customer_phone\":\"0944501936\",\"dev…",
+    "  → POST /tickets/332/assign   [Phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":332,\"ticket_code\":\"BH-0277\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 1081\",\"customer_phone\":\"0944501936\",\"devi…",
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 5604\",\"customerPhone\":\"0942772702\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":333,\"ticket_code\":\"BH-0278\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 5604\",\"customer_phone\":\"0942772702\",\"dev…",
+    "  → POST /tickets/333/assign   [Phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":333,\"ticket_code\":\"BH-0278\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 5604\",\"customer_phone\":\"0942772702\",\"devi…",
+    "  → POST /tickets/332/appointments   [Đặt lịch A]\n      gửi: {\"type\":\"GIAO\",\"startTime\":\"2200-05-13T02:00:00Z\",\"endTime\":\"2200-05-13T03:00:00Z\"}",
+    "  ← HTTP 201  {\"data\":{\"appointment_id\":149,\"ticket_id\":332,\"appointment_type\":\"GIAO\",\"start_time\":\"2200-05-13T02:00:00.000Z\",\"end_time\":\"2200-05-13T03:00:00.000Z\",…",
+    "  → POST /tickets/333/appointments   [Đặt lịch B (chạm đầu mút)]\n      gửi: {\"type\":\"GIAO\",\"startTime\":\"2200-05-13T03:00:00Z\",\"endTime\":\"2200-05-13T04:00:00Z\"}",
+    "  ← HTTP 201  {\"data\":{\"appointment_id\":150,\"ticket_id\":333,\"appointment_type\":\"GIAO\",\"start_time\":\"2200-05-13T03:00:00.000Z\",\"end_time\":\"2200-05-13T04:00:00.000Z\",…"
+  ],
+  "runAt": "2026-11-09T08:45:52.491Z"
+}

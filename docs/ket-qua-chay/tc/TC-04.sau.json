@@ -1,0 +1,26 @@
+{
+  "id": "TC-04",
+  "type": "Biên (phía không hợp lệ)",
+  "priority": "Cao",
+  "title": "Biên QT-05: lịch chồng lên lịch khác đúng 1 giây thì bị từ chối",
+  "input": "Lịch A 02:00:00–03:00:00; lịch B 02:59:59–04:00:00 (cùng KTV)",
+  "expected": "409 APPOINTMENT_OVERLAP",
+  "bug": null,
+  "actual": "HTTP 409, code=APPOINTMENT_OVERLAP",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 8005\",\"customerPhone\":\"0964148945\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":334,\"ticket_code\":\"BH-0279\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 8005\",\"customer_phone\":\"0964148945\",\"dev…",
+    "  → POST /tickets/334/assign   [Phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":334,\"ticket_code\":\"BH-0279\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 8005\",\"customer_phone\":\"0964148945\",\"devi…",
+    "  → POST /tickets   [Tạo phiếu]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 9243\",\"customerPhone\":\"0900877121\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescrip…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":335,\"ticket_code\":\"BH-0280\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 9243\",\"customer_phone\":\"0900877121\",\"dev…",
+    "  → POST /tickets/335/assign   [Phân công]\n      gửi: {\"technicianId\":2}",
+    "  ← HTTP 200  {\"ticket\":{\"ticket_id\":335,\"ticket_code\":\"BH-0280\",\"center_id\":1,\"technician_id\":2,\"customer_name\":\"TC khach 9243\",\"customer_phone\":\"0900877121\",\"devi…",
+    "  → POST /tickets/334/appointments   [Đặt lịch A]\n      gửi: {\"type\":\"GIAO\",\"startTime\":\"2210-12-26T02:00:00Z\",\"endTime\":\"2210-12-26T03:00:00Z\"}",
+    "  ← HTTP 201  {\"data\":{\"appointment_id\":151,\"ticket_id\":334,\"appointment_type\":\"GIAO\",\"start_time\":\"2210-12-26T02:00:00.000Z\",\"end_time\":\"2210-12-26T03:00:00.000Z\",…",
+    "  → POST /tickets/335/appointments   [Đặt lịch B (chồng 1 giây)]\n      gửi: {\"type\":\"GIAO\",\"startTime\":\"2210-12-26T02:59:59Z\",\"endTime\":\"2210-12-26T04:00:00Z\"}",
+    "  ← HTTP 409  {\"error\":{\"code\":\"APPOINTMENT_OVERLAP\",\"message\":\"Kỹ thuật viên đã có lịch trong khung giờ này (trùng lịch)\"}}"
+  ],
+  "runAt": "2026-11-09T08:45:52.529Z"
+}

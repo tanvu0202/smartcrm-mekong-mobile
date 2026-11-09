@@ -1,0 +1,22 @@
+{
+  "id": "TC-12",
+  "type": "Tái lập",
+  "priority": "Trung bình",
+  "title": "Chạy lại migration và seed lần 2 không nhân đôi dữ liệu",
+  "input": "npm run migrate (lần 2) rồi chạy lại 002_seed_catalog.sql; so số dòng trước/sau",
+  "expected": "Migration báo \"bỏ qua\" cả 3 file, thoát mã 0; số dòng các bảng danh mục không đổi",
+  "bug": null,
+  "actual": "migrate: 3 file \"bỏ qua\", mã thoát 0; số dòng không đổi",
+  "pass": true,
+  "evidence": [
+    "Số dòng TRƯỚC : {\"service_center\":2,\"technician\":5,\"technician_skill\":10,\"ticket BH-0001..0003\":3}",
+    "$ npm run migrate   (lần chạy thứ 2)",
+    "  bỏ qua  001_create_tables.sql (đã chạy)",
+    "  bỏ qua  002_seed_catalog.sql (đã chạy)",
+    "  bỏ qua  003_appointment_unique_active.sql (đã chạy)",
+    "  (mã thoát 0)",
+    "$ chạy lại 002_seed_catalog.sql",
+    "Số dòng SAU   : {\"service_center\":2,\"technician\":5,\"technician_skill\":10,\"ticket BH-0001..0003\":3}"
+  ],
+  "runAt": "2026-11-09T08:45:53.140Z"
+}

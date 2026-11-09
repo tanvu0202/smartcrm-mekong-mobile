@@ -1,0 +1,16 @@
+{
+  "id": "TC-07",
+  "type": "Dữ liệu sai",
+  "priority": "Trung bình",
+  "title": "Tên khách hàng chỉ gồm dấu cách phải bị từ chối",
+  "input": "customerName = \"     \" (5 dấu cách)",
+  "expected": "400 VALIDATION_ERROR",
+  "bug": "BUG-09",
+  "actual": "HTTP 400",
+  "pass": true,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu với tên toàn dấu cách]\n      gửi: {\"centerId\":1,\"customerName\":\"     \",\"customerPhone\":\"0938307431\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescription\":\"T…",
+    "  ← HTTP 400  {\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"Dữ liệu không hợp lệ\",\"details\":[\"customerName là bắt buộc\"]}}"
+  ],
+  "runAt": "2026-11-09T08:45:52.593Z"
+}

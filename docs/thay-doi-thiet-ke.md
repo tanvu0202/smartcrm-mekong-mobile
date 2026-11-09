@@ -142,3 +142,39 @@ TD-01..TD-07 trả lời từng điểm trong phản hồi của giảng viên v
 - Quyết định      : SỬA
 - Lý do           : Sau Sprint 2 chỉ phiếu có CRUD đầy đủ; lịch hẹn mới chỉ tạo và liệt kê theo phiếu. Hủy lịch là xóa mềm (`status = DA_HUY`) để giữ vết và vì QT-05 chỉ so với lịch `DA_DAT`. Xóa mềm làm lộ lỗi ràng buộc duy nhất (BUG-05) nên thêm migration 003.
 - Ảnh hưởng       : Thêm `GET`, `PUT`, `DELETE /appointments/{id}` (chỉ quản lý). `PUT` kiểm tra QT-05 nhưng bỏ qua chính lịch đang sửa; từ chối lịch đã hủy (`APPOINTMENT_CANCELLED`) và phiếu đã hoàn tất (`TICKET_CLOSED`). Migration `003_appointment_unique_active.sql` thay ràng buộc duy nhất bằng chỉ mục một phần cho lịch `DA_DAT`. Giới hạn đã biết: giao diện chưa có nút sửa / hủy lịch hẹn, hai thao tác này kiểm chứng bằng curl (`scripts/demo-curl.sh`). Có test ở `tests/appointmentCrud.test.js` và `tests/integration/appointment.test.js`. `docs/api-contract.md` đã cập nhật.
+
+## Thay đổi phát sinh khi kiểm thử hệ thống (Buổi 14, ngày 06/11/2026)
+
+### TD-19 Đổi kỹ thuật viên phải kiểm tra trùng lịch hẹn (QT-05)
+- Phản hồi của GV : Không có (phát hiện khi chạy test case TC-05, BUG-07).
+- Quyết định      : SỬA
+- Lý do           : QT-05 nói một kỹ thuật viên không được có hai lịch trùng giờ, nhưng chỉ đặt và sửa lịch hẹn kiểm tra quy tắc này; đổi kỹ thuật viên chuyển luôn các lịch của phiếu sang người mới mà bỏ qua. Quy tắc phải đúng ở mọi đường đi dẫn tới trạng thái đó, không chỉ ở một endpoint.
+- Ảnh hưởng       : `POST /tickets/{id}/reassign` có thêm lỗi 409 `APPOINTMENT_OVERLAP` khi lịch `DA_DAT` của phiếu trùng lịch của KTV mới (hai lịch chỉ chạm đầu mút vẫn hợp lệ); phiếu giữ nguyên KTV cũ, không ghi `ticket_log`. SRS, ERD, DDL không đổi. docs/api-contract.md cập nhật; test `tests/reassignOverlap.test.js`, `tests/integration/reassign.overlap.test.js`.
+
+### TD-20 Siết quy tắc kiểm tra đầu vào (ngày, tên, số điện thoại, độ dài)
+- Phản hồi của GV : Không có (phát hiện khi chạy TC-06, TC-07, TC-08, TC-11; BUG-08..11).
+- Quyết định      : SỬA
+- Lý do           : Dữ liệu sai phải bị chặn ở ranh giới hệ thống bằng lỗi 400 có thông báo, không được lưu thành dữ liệu sai (ngày 30/02 thành 02/03, tên rỗng, số điện thoại toàn dấu +) hay làm hỏng yêu cầu bằng lỗi 500 từ PostgreSQL.
+- Ảnh hưởng       : (1) Ngày giờ chỉ nhận chuỗi ISO 8601 và phải là ngày có thật; số hoặc chuỗi tự do như "hôm qua" bị 400 (trước đây một số chuỗi vẫn được hiểu). (2) Trường bắt buộc kiểu chuỗi không được chỉ gồm khoảng trắng. (3) Số điện thoại: tối đa một dấu `+` ở đầu rồi 8–15 chữ số. (4) Tên khách ≤ 100 ký tự, tên thiết bị ≤ 100, lý do ≤ 255 (theo kiểu cột VARCHAR). Giới hạn đã biết, chưa sửa: số nguyên vượt khoảng INT4 (ví dụ `centerId` 99999999999) vẫn làm PostgreSQL báo lỗi và API trả 500. Giao diện hiện gửi ngày bằng `toISOString()` nên không bị ảnh hưởng. docs/api-contract.md ghi thêm mục "Quy tắc đầu vào".
+
+### TD-21 Thêm tầng kiểm thử hệ thống có kịch bản (12 test case) và Test Plan
+- Phản hồi của GV : Không có (yêu cầu của Buổi 14).
+- Quyết định      : SỬA
+- Lý do           : Test đơn vị dùng repository giả và test tích hợp chỉ kiểm tra SQL, nên không bắt được lỗi ghép nhiều bước qua API (đổi KTV làm trùng lịch) hay lỗi do dữ liệu bất thường. Cần một tầng chạy từ yêu cầu HTTP đến CSDL thật, mỗi case có dữ liệu vào, kết quả mong đợi và ảnh minh chứng.
+- Ảnh hưởng       : Thêm `scripts/chay-test-case.js` + `scripts/tc/cases.js` (lệnh `npm run tc`, `npm run tc:all`), `scripts/xac-nhan-bug.js`, `scripts/chung-minh-hoi-quy.sh`; docs/test-plan.md, docs/test-report.md, docs/bug-log.md (BUG-06..11). Không đổi thiết kế hệ thống đang chạy.
+
+### TD-22 Lịch sử thay đổi của phiếu xếp theo thứ tự ghi (`log_id`), không theo `changed_at`
+- Phản hồi của GV : Không có (test tích hợp đồng thời đỏ ngẫu nhiên khi chạy lặp; BUG-06).
+- Quyết định      : SỬA
+- Lý do           : NFR05 cần nhật ký đáng tin. `changed_at` mặc định là `now()` = giờ bắt đầu transaction, không phải lúc ghi; hai thay đổi đồng thời trên một phiếu có thể nhận khóa dòng ngược thứ tự bắt đầu nên bị xếp ngược. `log_id` (BIGSERIAL) được cấp lúc INSERT, sau khi đã giữ khóa dòng phiếu, nên phản ánh đúng thứ tự thực hiện.
+- Ảnh hưởng       : `ticketLogRepository.findByTicket` đổi `ORDER BY changed_at, log_id` thành `ORDER BY log_id`; DDL, API và giao diện giữ nguyên (vẫn trả `changed_at`). Thêm `tests/integration/history.order.test.js`.
+
+## Quyết định sau phản hồi Bài tập 2 (Buổi 14, ngày 06/11/2026)
+
+Nhận xét của giảng viên về Bài tập 2: *"Bài rất tốt: đề xuất KTV (cùng trung tâm, tay nghề ≥3, ít phiếu), cảnh báo ≥10 phiếu, đổi KTV bắt buộc lý do, lịch hẹn không trùng (chạm đầu mút hợp lệ), chuỗi trạng thái không nhảy bước, đăng nhập 401/403, CRUD phiếu và lịch hẹn minh chứng bằng curl, React 3 màn hình đủ ba trạng thái. Cần khắc phục: không có lỗi đáng kể. Tên repo nên theo quy ước có MSSV. Mục kiểm chứng (bảng 4.2): đạt đủ các mục chung và mục theo track."*
+
+### TD-23 Giữ nguyên tên repository `smartcrm-mekong-mobile`
+- Phản hồi của GV : "Tên repo nên theo quy ước có MSSV." (đây là điểm duy nhất ở mục "Cần khắc phục"; các phần còn lại là nhận xét tốt, không yêu cầu sửa).
+- Quyết định      : GIỮ NGUYÊN
+- Lý do           : Nhận xét dùng chữ "nên" và bài vẫn đạt đủ mục kiểm chứng 4.2. Liên kết GitHub, thẻ `v0.2` và các commit đã được ghi trong báo cáo Bài tập 2, `README.md`, `docs/bug-log.md` và Bài tập 3; đổi tên ở giai đoạn này làm lệch các liên kết đã nộp. MSSV 2374802010573 được ghi ở đầu `README.md`, `docs/ai-disclosure.md` và tên thư mục làm việc `smartcrm-2374802010573-…`, nên bài vẫn truy được về đúng sinh viên. Nếu giảng viên yêu cầu bắt buộc, có thể đổi tên (GitHub tự chuyển hướng liên kết cũ) trước khi gắn thẻ `v1.0`.
+- Ảnh hưởng       : Không đổi mã nguồn, tài liệu hay liên kết. Các điểm mạnh được nhận xét (đề xuất KTV, cảnh báo ≥ 10 phiếu, lý do khi đổi KTV, không trùng lịch, chuỗi trạng thái, 401/403, CRUD, ba trạng thái giao diện) được giữ nguyên và nay có thêm test hệ thống bảo vệ (TC-01 … TC-12 trong `docs/test-report.md`).

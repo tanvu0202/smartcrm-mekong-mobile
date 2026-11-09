@@ -1,0 +1,16 @@
+{
+  "id": "TC-07",
+  "type": "Dữ liệu sai",
+  "priority": "Trung bình",
+  "title": "Tên khách hàng chỉ gồm dấu cách phải bị từ chối",
+  "input": "customerName = \"     \" (5 dấu cách)",
+  "expected": "400 VALIDATION_ERROR",
+  "bug": "BUG-09",
+  "actual": "HTTP 201 đã lưu customer_name=\"\"",
+  "pass": false,
+  "evidence": [
+    "  → POST /tickets   [Tạo phiếu với tên toàn dấu cách]\n      gửi: {\"centerId\":1,\"customerName\":\"     \",\"customerPhone\":\"0921074354\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescription\":\"T…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":134,\"ticket_code\":\"BH-0100\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"\",\"customer_phone\":\"0921074354\",\"device_model\":\"i…"
+  ],
+  "runAt": "2026-11-09T08:20:13.095Z"
+}

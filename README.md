@@ -142,3 +142,16 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 ## 7. Khai báo sử dụng AI
 
 Xem [docs/ai-disclosure.md](docs/ai-disclosure.md).
+
+## Kiểm thử hệ thống (Buổi 14)
+
+| Việc | Lệnh |
+|---|---|
+| Chạy một test case hệ thống | `npm run tc -- TC-05` |
+| Chạy cả 12 test case | `npm run tc:all` |
+| Xóa các phiếu thử do test case tạo | `npm run tc:don-dep` |
+| Chạy toàn bộ test đơn vị + tích hợp | `npm run test:full` (124 pass) |
+| Xác nhận một bug đã sửa | `npm run xac-nhan -- BUG-07` |
+| Chứng minh bug có thật (bỏ bản sửa → test đỏ) | `bash scripts/chung-minh-hoi-quy.sh BUG-07` |
+
+Tài liệu: [Test Plan](docs/test-plan.md) · [Test Report](docs/test-report.md) · [Bug Log](docs/bug-log.md) · ảnh minh chứng trong `docs/screenshots/`. Các lệnh `tc` tự bật backend tạm từ mã hiện tại nên không cần chạy `npm start`; cần PostgreSQL đang chạy và file `.env` đã điền.

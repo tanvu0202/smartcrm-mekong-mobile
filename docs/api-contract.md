@@ -50,7 +50,7 @@ Người thực hiện (`ticket_log.changed_by`) lấy từ token, không nhận
 | 409 | TICKET_CLOSED | phiếu HOAN_TAT (cả khi đổi KTV và khi đặt lịch hẹn) | QT-01 |
 | 409 | STATUS_SKIP | `status` nhảy bước: DA_PHAN_CONG → HOAN_TAT, thông báo "Phải chuyển qua Đang xử lý trước" | QT-01, US05 |
 | 409 | INVALID_TRANSITION | chuyển trạng thái không hợp lệ (lùi bước, trùng trạng thái) | QT-01 |
-| 409 | APPOINTMENT_OVERLAP | kỹ thuật viên của phiếu đã có lịch `DA_DAT` chồng giờ (hai lịch chỉ chạm đầu mút thì hợp lệ) | QT-05, US04 |
+| 409 | APPOINTMENT_OVERLAP | kỹ thuật viên của phiếu đã có lịch `DA_DAT` chồng giờ (hai lịch chỉ chạm đầu mút thì hợp lệ); cũng trả về khi `reassign` làm lịch của phiếu trùng lịch của KTV mới (TD-19) | QT-05, US04 |
 | 409 | APPOINTMENT_CANCELLED | sửa hoặc hủy một lịch hẹn đã hủy trước đó | QT-05, TD-18 |
 | 409 | TICKET_NOT_ASSIGNED | đặt lịch hẹn khi phiếu chưa có kỹ thuật viên | QT-05 |
 | 422 | TECH_OTHER_CENTER / TECH_INVALID | KTV khác trung tâm / không tồn tại / ngừng hoạt động | QT-03 |
@@ -75,3 +75,10 @@ Danh sách phiếu trả mảng trong `{data}`; tên trường giữ snake_case 
 `GET /tickets` trả thêm `appointment_start` (giờ bắt đầu sớm nhất trong các lịch `DA_DAT` của phiếu, hoặc `null`) cho cột "Lịch hẹn" của M3. Đặt lịch hẹn khóa dòng phiếu và dòng kỹ thuật viên (`SELECT … FOR UPDATE`) nên hai lần đặt cùng lúc cho một kỹ thuật viên xếp hàng và lần sau bị `APPOINTMENT_OVERLAP`.
 
 *Chưa làm:* gửi thông báo SMS / email lịch hẹn cho khách (FR07, US07; xem README mục 6 và TD-15).
+
+## Quy tắc đầu vào (TD-20)
+
+- Ngày giờ (`dueDate`, `startTime`, `endTime`): chuỗi ISO 8601 và phải là ngày có thật (30/02 bị 400, không bị dời sang 02/03).
+- Trường bắt buộc kiểu chuỗi không được chỉ gồm khoảng trắng. `customerName` và `deviceModel` tối đa 100 ký tự, `reason` tối đa 255 ký tự (sau khi cắt khoảng trắng hai đầu).
+- `customerPhone`: tối đa một dấu `+` ở đầu rồi 8–15 chữ số.
+- Vi phạm → 400 `VALIDATION_ERROR` kèm danh sách trường sai (với các trường đã liệt kê; số nguyên vượt khoảng INT4 là giới hạn đã biết, chưa kiểm tra).

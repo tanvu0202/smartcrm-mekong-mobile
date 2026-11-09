@@ -1,0 +1,18 @@
+{
+  "id": "TC-11",
+  "type": "Biên (2 phía)",
+  "priority": "Trung bình",
+  "title": "Độ dài tên khách hàng: 100 ký tự được chấp nhận, 101 ký tự bị từ chối (cột VARCHAR(100))",
+  "input": "customerName 100 ký tự, rồi 101 ký tự",
+  "expected": "100 ký tự → 201; 101 ký tự → 400 VALIDATION_ERROR (không phải 500)",
+  "bug": "BUG-11",
+  "actual": "100 ký tự → HTTP 201; 101 ký tự → HTTP 500 INTERNAL",
+  "pass": false,
+  "evidence": [
+    "  → POST /tickets   [Tên 100 ký tự]\n      gửi: {\"centerId\":1,\"customerName\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\",\"customerPhone\":\"0…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":139,\"ticket_code\":\"BH-0105\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN…",
+    "  → POST /tickets   [Tên 101 ký tự]\n      gửi: {\"centerId\":1,\"customerName\":\"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\",\"customerPhone\":\"…",
+    "  ← HTTP 500  {\"error\":{\"code\":\"INTERNAL\",\"message\":\"Lỗi hệ thống\"}}"
+  ],
+  "runAt": "2026-11-09T08:21:02.226Z"
+}

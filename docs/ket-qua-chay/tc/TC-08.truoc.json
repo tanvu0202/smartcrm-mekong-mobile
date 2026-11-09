@@ -1,0 +1,18 @@
+{
+  "id": "TC-08",
+  "type": "Dữ liệu sai / biên",
+  "priority": "Trung bình",
+  "title": "Số điện thoại: \"++++++++\" bị từ chối, \"+84912345678\" được chấp nhận",
+  "input": "customerPhone = \"++++++++\" (8 ký tự) và \"+84912345678\"",
+  "expected": "Yêu cầu 1 → 400; yêu cầu 2 → 201",
+  "bug": "BUG-10",
+  "actual": "\"++++++++\" → HTTP 201; \"+84912345678\" → HTTP 201",
+  "pass": false,
+  "evidence": [
+    "  → POST /tickets   [SĐT toàn dấu +]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 8717\",\"customerPhone\":\"++++++++\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescripti…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":135,\"ticket_code\":\"BH-0101\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 8717\",\"customer_phone\":\"++++++++\",\"devic…",
+    "  → POST /tickets   [SĐT đúng định dạng quốc tế]\n      gửi: {\"centerId\":1,\"customerName\":\"TC khach 9226\",\"customerPhone\":\"+84912345678\",\"deviceModel\":\"iPhone 13\",\"issueGroup\":\"MAN_HINH\",\"priority\":2,\"issueDescr…",
+    "  ← HTTP 201  {\"data\":{\"ticket_id\":136,\"ticket_code\":\"BH-0102\",\"center_id\":1,\"technician_id\":null,\"customer_name\":\"TC khach 9226\",\"customer_phone\":\"+84912345678\",\"d…"
+  ],
+  "runAt": "2026-11-09T08:20:24.989Z"
+}

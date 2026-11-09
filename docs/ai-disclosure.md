@@ -1,8 +1,8 @@
-# Khai báo sử dụng công cụ AI – Buổi 8, 10 và 12
+# Khai báo sử dụng công cụ AI – Buổi 8, 10, 12 và 14
 
 **Họ và tên:** Trần Tấn Vũ  
 **Mã số sinh viên:** 2374802010573  
-**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10) và 30/10/2026 (Buổi 12)
+**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10) và 30/10/2026 (Buổi 12) và 06/11/2026 (Buổi 14)
 
 **Cam kết:** Tôi đã đọc, kiểm tra và chịu trách nhiệm về toàn bộ nội dung nộp. Các công cụ AI được dùng nêu đầy đủ trong bảng dưới đây; phần không khai báo là do tôi tự thực hiện.
 
@@ -22,4 +22,8 @@
 | Trợ lý AI dạng chat (Claude) | `scripts/kiem-tra-truoc-khi-nop.sh`, `scripts/chay-minh-chung.sh`, `scripts/thu-clone-tag.sh`, `scripts/dem-dong.js`, `scripts/proxy-cham.js`, `scripts/dat-lai-du-lieu-demo.js`, `scripts/demo-curl.sh` (phần CRUD), `.env.example` | Yêu cầu tự động hóa bảy việc dọn dẹp của Buổi 12, thử clone đúng thẻ `v0.2`, đếm dòng để chứng minh chạy lại migration không nhân đôi dữ liệu | Chạy từng script trên máy tôi và đọc kết quả; thử `thu-clone-tag.sh` sau khi đã đẩy thẻ lên GitHub |
 | Trợ lý AI dạng chat (Claude) | `docs/bug-log.md`, `docs/thay-doi-thiet-ke.md` (TD-17, TD-18), `docs/api-contract.md`, `README.md`, file PDF Bài tập 2 | Yêu cầu soạn nhật ký lỗi, ghi thay đổi thiết kế, cập nhật hợp đồng API và README, dàn trang báo cáo PDF | Đối chiếu từng con số (số test, mã lỗi, mã commit) với kết quả chạy trên máy tôi; sửa lại các chi tiết nhật ký lỗi cho đúng những gì tôi đã gặp |
 | Trợ lý AI dạng chat (Claude) | Ảnh giao diện dùng trong báo cáo Buổi 10 | Claude chạy giao diện trong môi trường của nó (trình duyệt tự động, PostgreSQL thật) và chụp lại các màn hình | Tôi đối chiếu với giao diện chạy trên máy tôi; ảnh minh chứng của Bài tập 2 (Buổi 12) là ảnh tôi tự chụp |
+| Trợ lý AI dạng chat (Claude) | `scripts/chay-test-case.js`, `scripts/tc/cases.js`, `scripts/chup-tc.sh`, `scripts/xac-nhan-bug.js`, `scripts/chung-minh-hoi-quy.sh`, `scripts/tao-test-report.js` | Yêu cầu dựng bộ chạy 12 test case hệ thống (mỗi case chạy được bằng một lệnh, có dữ liệu vào, kết quả mong đợi và thực tế) | Tôi tự chạy từng test case trên máy mình và chụp ảnh; đọc lại từng case để giải thích được dữ liệu vào và vì sao kết quả mong đợi như vậy |
+| Trợ lý AI dạng chat (Claude) | Tìm lỗi (gọi thử API với dữ liệu biên và dữ liệu sai) và 6 bản sửa BUG-06..11 trong `src/backend/src/services/ticketService.js`, `repositories/ticketLogRepository.js`; test hồi quy trong `tests/` | Claude gọi thử API trong môi trường của nó để tìm lỗi, đề xuất bản sửa và test hồi quy; tôi yêu cầu mỗi lỗi nằm trong một commit riêng | Tôi chạy lại test case trên máy mình thấy FAIL trước và PASS sau từng commit; đọc diff từng commit; chạy `scripts/chung-minh-hoi-quy.sh` để thấy test đỏ khi bỏ bản sửa |
+| Trợ lý AI dạng chat (Claude) | `docs/test-plan.md`, `docs/test-report.md` (sinh từ kết quả chạy thật), `docs/bug-log.md` (BUG-06..11), `docs/thay-doi-thiet-ke.md` (TD-19..23), `docs/api-contract.md` | Yêu cầu soạn Test Plan, Test Report, Bug Log theo mẫu bảy dòng và ghi thay đổi thiết kế | Đối chiếu từng con số (số test, mã commit, kết quả PASS/FAIL) với ảnh chụp và `git log` trên máy tôi |
 | Không dùng AI | Nội dung nhận xét của giảng viên, quyết định SỬA/GIỮ; ảnh chụp terminal và giao diện của Bài tập 2 (Buổi 12) | – | Do tôi tự chạy lệnh và tự chụp màn hình trên máy của mình |
+| Không dùng AI | Ảnh chụp terminal của 12 test case và 6 lượt xác nhận, các lệnh git, đẩy mã lên GitHub và kiểm tra liên kết commit (Buổi 14) | – | Do tôi tự chạy và tự chụp trên máy của mình |
