@@ -4,6 +4,21 @@ const { badRequest, forbidden, notFound, conflict, unprocessable } = require('..
 
 const ISSUE_GROUPS = ['MAN_HINH', 'PIN', 'SAC', 'LOA', 'CAMERA', 'PHAN_MEM', 'KHAC'];
 
+// BUG-08: Date.parse("2027-02-30") không báo lỗi mà tự dời sang 02/03/2027. Chỉ nhận ISO 8601 và kiểm tra ngày có thật.
+const ISO_INSTANT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(Z|[+-]\d{2}:\d{2})?)?$/;
+function parseInstant(value) {
+  if (typeof value !== 'string') return NaN;
+  const s = value.trim();
+  const m = ISO_INSTANT.exec(s);
+  if (!m) return NaN;
+  const [y, mo, d, h = 0, mi = 0, sec = 0] = m.slice(1, 7).map(Number);
+  if (mo < 1 || mo > 12 || h > 23 || mi > 59 || sec > 59) return NaN;
+  const dt = new Date(0);
+  dt.setUTCFullYear(y, mo, 0); // ngày 0 của tháng sau = ngày cuối của tháng này (xử lý đúng năm nhuận)
+  if (d < 1 || d > dt.getUTCDate()) return NaN;
+  return Date.parse(s);
+}
+
 function validateTicketInput(body, { partial = false } = {}) {
   const errors = [];
   const b = body || {};
@@ -14,7 +29,7 @@ function validateTicketInput(body, { partial = false } = {}) {
   required.forEach(need);
   if (b.priority !== undefined && ![1, 2, 3].includes(Number(b.priority))) errors.push('priority phải là 1, 2 hoặc 3');
   if (b.issueGroup && !ISSUE_GROUPS.includes(b.issueGroup)) errors.push(`issueGroup phải thuộc ${ISSUE_GROUPS.join(', ')}`);
-  if (b.dueDate && Number.isNaN(Date.parse(b.dueDate))) errors.push('dueDate không phải thời điểm hợp lệ');
+  if (b.dueDate && Number.isNaN(parseInstant(b.dueDate))) errors.push('dueDate không phải thời điểm hợp lệ');
   if (b.customerPhone && !/^[0-9+]{8,15}$/.test(b.customerPhone)) errors.push('customerPhone không hợp lệ');
   if (errors.length) throw badRequest('Dữ liệu không hợp lệ', errors);
   return {
@@ -25,7 +40,7 @@ function validateTicketInput(body, { partial = false } = {}) {
     issueGroup: b.issueGroup,
     issueDescription: b.issueDescription,
     priority: Number(b.priority),
-    dueDate: new Date(b.dueDate).toISOString(),
+    dueDate: new Date(parseInstant(b.dueDate)).toISOString(),
   };
 }
 
@@ -37,8 +52,8 @@ function validateAppointmentInput(body) {
   const b = body || {};
   const errors = [];
   if (!APPOINTMENT_TYPES.includes(b.type)) errors.push(`type phải thuộc ${APPOINTMENT_TYPES.join(', ')}`);
-  const start = Date.parse(b.startTime);
-  const end = Date.parse(b.endTime);
+  const start = parseInstant(b.startTime);
+  const end = parseInstant(b.endTime);
   if (Number.isNaN(start)) errors.push('startTime không phải thời điểm hợp lệ');
   if (Number.isNaN(end)) errors.push('endTime không phải thời điểm hợp lệ');
   if (!Number.isNaN(start) && !Number.isNaN(end) && end <= start) errors.push('endTime phải sau startTime');
