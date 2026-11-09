@@ -15,7 +15,7 @@ const ticketLogRepository = {
     const { rows } = await db.query(
       `SELECT log_id, ticket_id, action, old_technician_id, new_technician_id,
               old_status, new_status, reason, changed_by, changed_at
-         FROM ticket_log WHERE ticket_id = $1 ORDER BY changed_at, log_id`, [ticketId]);
+         FROM ticket_log WHERE ticket_id = $1 ORDER BY log_id`, [ticketId]); // BUG-06: changed_at = giờ bắt đầu transaction nên không phản ánh thứ tự ghi; log_id thì có
     return rows;
   },
 };
