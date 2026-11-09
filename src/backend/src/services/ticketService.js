@@ -3,6 +3,8 @@
 const { badRequest, forbidden, notFound, conflict, unprocessable } = require('../errors');
 
 const ISSUE_GROUPS = ['MAN_HINH', 'PIN', 'SAC', 'LOA', 'CAMERA', 'PHAN_MEM', 'KHAC'];
+// BUG-11: giới hạn theo kiểu cột trong db/migrations/001 – vượt thì PostgreSQL báo 22001 và API trả 500.
+const LIMITS = { customerName: 100, deviceModel: 100, reason: 255 }; // VARCHAR(100), VARCHAR(100), ticket_log.reason VARCHAR(255)
 
 // BUG-08: Date.parse("2027-02-30") không báo lỗi mà tự dời sang 02/03/2027. Chỉ nhận ISO 8601 và kiểm tra ngày có thật.
 const ISO_INSTANT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(Z|[+-]\d{2}:\d{2})?)?$/;
@@ -32,6 +34,8 @@ function validateTicketInput(body, { partial = false } = {}) {
   if (b.issueGroup && !ISSUE_GROUPS.includes(b.issueGroup)) errors.push(`issueGroup phải thuộc ${ISSUE_GROUPS.join(', ')}`);
   if (b.dueDate && Number.isNaN(parseInstant(b.dueDate))) errors.push('dueDate không phải thời điểm hợp lệ');
   if (b.customerPhone && !/^\+?[0-9]{8,15}$/.test(b.customerPhone)) errors.push('customerPhone không hợp lệ');
+  if (typeof b.customerName === 'string' && b.customerName.trim().length > LIMITS.customerName) errors.push(`customerName tối đa ${LIMITS.customerName} ký tự`);
+  if (typeof b.deviceModel === 'string' && b.deviceModel.trim().length > LIMITS.deviceModel) errors.push(`deviceModel tối đa ${LIMITS.deviceModel} ký tự`);
   if (errors.length) throw badRequest('Dữ liệu không hợp lệ', errors);
   return {
     centerId: b.centerId !== undefined ? Number(b.centerId) : undefined,
@@ -76,6 +80,7 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, 
   async function changeAssignment(id, { technicianId, reason, confirm, changedBy } = {}, mode) {
     if (!Number.isInteger(Number(technicianId)) || Number(technicianId) <= 0) throw badRequest('technicianId là bắt buộc');
     if (!changedBy) throw badRequest('changedBy là bắt buộc');
+    if (reason !== undefined && reason !== null && String(reason).trim().length > LIMITS.reason) throw badRequest(`reason tối đa ${LIMITS.reason} ký tự`);
     const techId = Number(technicianId);
     const isChange = mode === 'REASSIGN';
 
