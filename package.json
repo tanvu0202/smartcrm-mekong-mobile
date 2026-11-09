@@ -7,7 +7,11 @@
     "install:all": "npm install && cd src/frontend && npm install",
     "web": "npm --prefix src/frontend run dev",
     "web:build": "npm --prefix src/frontend run build",
-    "test:full": "node scripts/chay-test-day-du.js"
+    "test:full": "node scripts/chay-test-day-du.js",
+    "tc": "node scripts/chay-test-case.js",
+    "tc:all": "node scripts/chay-test-case.js --tat-ca",
+    "tc:don-dep": "node scripts/chay-test-case.js --don-dep",
+    "xac-nhan": "node scripts/xac-nhan-bug.js"
   },
   "dependencies": {
     "dotenv": "^18.0.8",
