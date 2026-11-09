@@ -22,7 +22,8 @@ function parseInstant(value) {
 function validateTicketInput(body, { partial = false } = {}) {
   const errors = [];
   const b = body || {};
-  const need = (k) => { if (b[k] === undefined || b[k] === null || b[k] === '') errors.push(`${k} là bắt buộc`); };
+  // BUG-09: chuỗi chỉ gồm dấu cách cũng là "thiếu" (trước đây chỉ so với chuỗi rỗng nên "   " lọt qua và bị lưu thành rỗng)
+  const need = (k) => { if (b[k] === undefined || b[k] === null || (typeof b[k] === 'string' && b[k].trim() === '')) errors.push(`${k} là bắt buộc`); };
   const required = partial
     ? ['customerName', 'customerPhone', 'deviceModel', 'issueGroup', 'priority', 'dueDate']
     : ['centerId', 'customerName', 'customerPhone', 'deviceModel', 'issueGroup', 'priority', 'dueDate'];
