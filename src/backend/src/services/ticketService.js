@@ -79,6 +79,11 @@ function createTicketService({ ticketRepo, technicianRepo, logRepo, centerRepo, 
         if (t.status === 'DANG_XU_LY' && confirm !== true) {
           throw conflict('Phiếu đang xử lý – cần xác nhận (confirm=true) trước khi đổi KTV', 'CONFIRM_REQUIRED'); // QT-04
         }
+        // QT-05 (BUG-07): lịch hẹn đang hiệu lực của phiếu sẽ thuộc về KTV mới, nên không được trùng giờ với lịch sẵn có của người đó.
+        for (const appt of await appointmentRepo.findByTicket(conn, id)) {
+          const clash = await appointmentRepo.findOverlap(conn, techId, appt.start_time, appt.end_time);
+          if (clash) throw conflict('KTV mới đã có lịch trong khung giờ hẹn của phiếu này (trùng lịch)', 'APPOINTMENT_OVERLAP'); // QT-05
+        }
       }
 
       const openBefore = await ticketRepo.countOpenByTechnician(conn, techId);

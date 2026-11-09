@@ -22,7 +22,8 @@ function setup({ ticket, tech, open = 0 } = {}) {
   };
   const logRepo = { insert: async (_c, l) => { state.logs.push(l); return l; }, findByTicket: async () => state.logs };
   const withTransaction = async (fn) => { state.tx++; return fn({}); };
-  const svc = createTicketService({ ticketRepo, technicianRepo, logRepo, db: {}, withTransaction, config: {} });
+  const appointmentRepo = { findByTicket: async () => [], findOverlap: async () => null };
+  const svc = createTicketService({ ticketRepo, technicianRepo, logRepo, appointmentRepo, db: {}, withTransaction, config: {} });
   return { svc, state };
 }
 const T = (o = {}) => ({ ticket_id: 1, center_id: 1, technician_id: null, status: 'MOI', issue_group: 'MAN_HINH', ...o });
