@@ -31,7 +31,7 @@ function validateTicketInput(body, { partial = false } = {}) {
   if (b.priority !== undefined && ![1, 2, 3].includes(Number(b.priority))) errors.push('priority phải là 1, 2 hoặc 3');
   if (b.issueGroup && !ISSUE_GROUPS.includes(b.issueGroup)) errors.push(`issueGroup phải thuộc ${ISSUE_GROUPS.join(', ')}`);
   if (b.dueDate && Number.isNaN(parseInstant(b.dueDate))) errors.push('dueDate không phải thời điểm hợp lệ');
-  if (b.customerPhone && !/^[0-9+]{8,15}$/.test(b.customerPhone)) errors.push('customerPhone không hợp lệ');
+  if (b.customerPhone && !/^\+?[0-9]{8,15}$/.test(b.customerPhone)) errors.push('customerPhone không hợp lệ');
   if (errors.length) throw badRequest('Dữ liệu không hợp lệ', errors);
   return {
     centerId: b.centerId !== undefined ? Number(b.centerId) : undefined,
