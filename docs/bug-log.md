@@ -94,3 +94,11 @@ Bảy dòng mỗi lỗi: mã và mức độ · phát hiện bởi · triệu ch
 - Nguyên nhân : `ticketService.js`, hàm `validateTicketInput` (tên, thiết bị) và `changeAssignment` (lý do) không kiểm tra độ dài so với kiểu cột trong `db/migrations/001_create_tables.sql` (`VARCHAR(100)`, `VARCHAR(255)`); PostgreSQL từ chối (`22001`) và `errorHandler` chỉ ánh xạ `22P02` và `23xxx`, các mã khác thành 500.
 - Cách sửa : khai báo giới hạn theo cột (`LIMITS`) và kiểm tra ngay ở service (tên ≤ 100, thiết bị ≤ 100, lý do ≤ 255, tính sau khi cắt khoảng trắng) → 400 nêu rõ trường. Test hồi quy `tests/inputLimits.test.js` (4 test, biên hai phía).
 - Commit và xác nhận : [`bb3a289`](https://github.com/tanvu0202/smartcrm-mekong-mobile/commit/bb3a2894f3ee31cc74981bd932fe9b6fbd04be05) · TC-11 FAIL → PASS (100 ký tự → 201, 101 ký tự → 400); `npm run test:full` 0 fail (ảnh `BUG-11-fixed.png`).
+
+### BUG-12 – Major – CSDL chết thì API treo thay vì báo lỗi (tìm thấy bằng checklist bảo mật mục 5, 12/11/2026)
+- Phát hiện bởi : `scripts/kiem-tra-bao-mat.sh` mục 5 – `docker compose stop db` rồi `curl /api/tickets` không có phản hồi (HTTP 000 sau 30 giây).
+- Triệu chứng : khi container `db` dừng, mọi lời gọi cần CSDL đều treo đến hết thời gian của client; không có thông báo lỗi nào cho người dùng.
+- Tái lập : dựng bằng `docker compose up -d --build`, đăng nhập, `docker compose stop db`, `curl -m 30 http://localhost:3000/api/tickets`.
+- Nguyên nhân : `src/backend/src/config/index.js` không đặt `connectionTimeoutMillis` cho pool `pg` (mặc định chờ vô hạn); `src/backend/src/db.js` không bắt sự kiện `error` của pool (kết nối rỗi bị ngắt có thể làm sập tiến trình); `errorHandler.js` không phân biệt lỗi mất kết nối nên nếu có thì trả 500.
+- Cách sửa : chờ kết nối tối đa 5 giây (`DB_CONNECT_TIMEOUT_MS`), bắt lỗi pool và ghi log mã lỗi, trả **503 `DB_UNAVAILABLE`** với thông báo chung. Test hồi quy `tests/dbUnavailable.test.js` (5 test: bốn kiểu lỗi mất kết nối và một lỗi bất ngờ vẫn là 500).
+- Commit và xác nhận : `1b0da63` · chạy lại mục 5 trên Docker thật: dừng `db` → HTTP 503 `DB_UNAVAILABLE`, bật lại `db` thì hệ thống `(healthy)` trở lại.

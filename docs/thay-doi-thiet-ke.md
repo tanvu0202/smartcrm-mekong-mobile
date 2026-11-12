@@ -191,3 +191,9 @@ Nhận xét của giảng viên về Bài tập 2: *"Bài rất tốt: đề xu�
   3. Image chạy bằng người dùng `node` (không root); `.dockerignore` loại `.env`, `node_modules`, `.git`; `.env.example` có giá trị mẫu chạy được.
   4. Endpoint kiểm tra sức khỏe giữ nguyên `GET /api/health` (trả 503 khi CSDL chết nên Docker báo `unhealthy`).
 - Ảnh hưởng: thêm `Dockerfile`, `docker-compose.yml`, `.dockerignore`; sửa `.env.example`, `src/backend/index.js`, `src/backend/src/app.js`, README. Không đổi nghiệp vụ, API hay CSDL.
+
+### TD-25 Ba sửa đổi sau phép thử máy trắng và checklist bảo mật (Buổi 16)
+- **Dockerfile bỏ `package-lock.json` của giao diện ở giai đoạn build.** Tệp khoá được tạo trên Windows chỉ liệt kê gói nhị phân `win32` của `rollup` và `esbuild`, nên `npm ci` trên Alpine (Linux musl) không có gói đúng nền tảng và `vite build` báo `MODULE_NOT_FOUND` (phát hiện ở lần chạy đầu của `scripts/thu-may-trang.sh`). Giai đoạn `web` giờ chạy `npm install` không có tệp khoá; giai đoạn chạy thật vẫn dùng `npm ci --omit=dev` với khoá của backend. Đánh đổi: phiên bản thư viện giao diện trong image theo khoảng `^` của `package.json`, không ghim tuyệt đối. Cách làm sạch hơn (để sau): tạo lại khoá đa nền tảng bằng `npm install --os=linux --cpu=x64`.
+- **CSDL chết trả 503 trong 5 giây** (BUG-12): `connectionTimeoutMillis` 5000 ms (đổi bằng `DB_CONNECT_TIMEOUT_MS`), bắt lỗi pool, mã `DB_UNAVAILABLE`.
+- **Nâng `body-parser` (≤ 2.3.0) → 2.4.0** (gói đi kèm Express 5) để vá lỗ hổng từ chối dịch vụ mức high mà `npm audit` báo ở checklist mục 7; chỉ đổi `package-lock.json`.
+- Ảnh hưởng: không đổi nghiệp vụ, hợp đồng API hay CSDL; thêm mã lỗi 503 `DB_UNAVAILABLE`.

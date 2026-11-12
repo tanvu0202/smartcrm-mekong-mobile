@@ -134,7 +134,7 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 
 ## 5. Tài liệu
 
-[Deployment Guide](docs/deployment-guide.md) · [SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
+[Deployment Guide](docs/deployment-guide.md) · [API docs (EN)](docs/api-docs.md) · [Checklist bảo mật](docs/checklist-bao-mat.md) · [Ví dụ API thật](docs/api-examples.md) · [SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
 
 ## 6. Trạng thái hiện tại (Bài tập 2 – Buổi 12, 30/10/2026, thẻ `v0.2`)
 
