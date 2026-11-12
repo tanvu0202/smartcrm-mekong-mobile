@@ -6,7 +6,9 @@ FROM node:22-alpine AS web
 WORKDIR /web
 # Chép tệp khoá trước -> chỉ cài lại thư viện khi package-lock.json đổi (tận dụng cache)
 COPY src/frontend/package.json src/frontend/package-lock.json ./
-RUN npm ci
+# package-lock.json của frontend được tạo trên Windows nên chỉ liệt kê gói nhị phân win32 của rollup/esbuild;
+# trên Alpine (Linux) cần bản linux-musl -> bỏ tệp khoá ở giai đoạn build giao diện để npm tự chọn gói đúng nền tảng.
+RUN rm -f package-lock.json && npm install --no-audit --no-fund
 COPY src/frontend ./
 RUN npm run build
 
