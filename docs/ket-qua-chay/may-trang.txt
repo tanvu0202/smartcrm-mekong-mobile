@@ -1,0 +1,166 @@
+PHÉP THỬ MÁY TRẮNG – 12/11/2026 22:30   thẻ/nhánh: dev   cổng: 3000
+Nguồn: https://github.com/tanvu0202/smartcrm-mekong-mobile.git
+
+=== Bước 1: xoá dấu vết lần chạy trước
+
+$ docker compose down -v
+ Volume smartcrm-2374802010573-smartcrm-mekong-mobile_dbdata  Removing
+ Volume smartcrm-2374802010573-smartcrm-mekong-mobile_dbdata  Removed
+
+$ docker compose down -v
+ Container kiem-tra-may-trang-app-1  Stopping
+ Container kiem-tra-may-trang-app-1  Stopped
+ Container kiem-tra-may-trang-app-1  Removing
+ Container kiem-tra-may-trang-app-1  Removed
+ Container kiem-tra-may-trang-db-1  Stopping
+ Container kiem-tra-may-trang-db-1  Stopped
+ Container kiem-tra-may-trang-db-1  Removing
+ Container kiem-tra-may-trang-db-1  Removed
+ Volume kiem-tra-may-trang_dbdata  Removing
+ Network kiem-tra-may-trang_default  Removing
+ Volume kiem-tra-may-trang_dbdata  Removed
+ Network kiem-tra-may-trang_default  Removed
+
+=== Bước 2: clone theo thẻ vào thư mục trống
+
+$ git clone --branch dev https://github.com/tanvu0202/smartcrm-mekong-mobile.git /tmp/kiem-tra-may-trang
+Cloning into 'C:/Users/hacke/AppData/Local/Temp/kiem-tra-may-trang'...
+thẻ/nhánh: dev   commit: 1b0da63
+
+=== Bước 3: hai lệnh của người chấm (cp .env.example .env  +  docker compose up -d --build)
+$ cp .env.example .env      (đã tạo .env, không in nội dung)
+
+$ docker compose up -d --build
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [app internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.86kB done
+#1 DONE 0.0s
+
+#2 [app auth] library/node:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [app internal] load metadata for docker.io/library/node:22-alpine
+#3 DONE 1.7s
+
+#4 [app internal] load .dockerignore
+#4 transferring context: 266B done
+#4 DONE 0.0s
+
+#5 [app web 1/6] FROM docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a
+#5 DONE 0.0s
+
+#6 [app internal] load build context
+#6 transferring context: 420.16kB 0.1s done
+#6 DONE 0.1s
+
+#7 [app web 3/6] COPY src/frontend/package.json src/frontend/package-lock.json ./
+#7 CACHED
+
+#8 [app web 2/6] WORKDIR /web
+#8 CACHED
+
+#9 [app web 4/6] RUN rm -f package-lock.json && npm install --no-audit --no-fund
+#9 CACHED
+
+#10 [app web 5/6] COPY src/frontend ./
+#10 CACHED
+
+#11 [app web 6/6] RUN npm run build
+#11 CACHED
+
+#12 [app stage-1  2/11] WORKDIR /app
+#12 CACHED
+
+#13 [app stage-1  3/11] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [app stage-1  4/11] RUN npm ci --omit=dev
+#14 CACHED
+
+#15 [app stage-1  5/11] COPY src/backend ./src/backend
+#15 DONE 0.1s
+
+#16 [app stage-1  6/11] COPY db ./db
+#16 DONE 0.1s
+
+#17 [app stage-1  7/11] COPY scripts ./scripts
+#17 DONE 0.1s
+
+#18 [app stage-1  8/11] COPY tests ./tests
+#18 DONE 0.1s
+
+#19 [app stage-1  9/11] COPY src/frontend/package.json ./src/frontend/package.json
+#19 DONE 0.1s
+
+#20 [app stage-1 10/11] COPY src/frontend/src ./src/frontend/src
+#20 DONE 0.1s
+
+#21 [app stage-1 11/11] COPY --from=web /web/dist ./src/frontend/dist
+#21 DONE 0.1s
+
+#22 [app] exporting to image
+#22 exporting layers
+#22 exporting layers 0.3s done
+#22 writing image sha256:63d6a2eb46d9f14c2dae249414aa6c560cb975f696d9991cf852767195217555 done
+#22 naming to docker.io/library/kiem-tra-may-trang-app 0.0s done
+#22 DONE 0.4s
+
+#23 [app] resolving provenance for metadata file
+#23 DONE 0.0s
+ app  Built
+ Network kiem-tra-may-trang_default  Creating
+ Network kiem-tra-may-trang_default  Created
+ Volume "kiem-tra-may-trang_dbdata"  Creating
+ Volume "kiem-tra-may-trang_dbdata"  Created
+ Container kiem-tra-may-trang-db-1  Creating
+ Container kiem-tra-may-trang-db-1  Created
+ Container kiem-tra-may-trang-app-1  Creating
+ Container kiem-tra-may-trang-app-1  Created
+ Container kiem-tra-may-trang-db-1  Starting
+ Container kiem-tra-may-trang-db-1  Started
+ Container kiem-tra-may-trang-db-1  Waiting
+ Container kiem-tra-may-trang-db-1  Healthy
+ Container kiem-tra-may-trang-app-1  Starting
+ Container kiem-tra-may-trang-app-1  Started
+
+=== Bước 4: kiểm tra 'Verify it works' (chờ tối đa 3 phút cho db + app báo healthy)
+
+$ docker compose ps
+NAME                       IMAGE                    COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+kiem-tra-may-trang-app-1   kiem-tra-may-trang-app   "docker-entrypoint.s…"   app       21 seconds ago   Up 12 seconds (healthy)   0.0.0.0:3000->3000/tcp
+kiem-tra-may-trang-db-1    postgres:16-alpine       "docker-entrypoint.s…"   db        21 seconds ago   Up 18 seconds (healthy)   5432/tcp
+
+$ curl -s http://localhost:3000/api/health
+{"status":"ok","db":"up"} (HTTP 200)
+
+$ curl -s -X POST http://localhost:3000/api/auth/login -d '{"username":"dieu.phoi",...}'   (che token)
+{"token":"<đã che>","expiresIn":28800,"user":{"username":"dieu.phoi","fullName":"Điều phối viên","role":"QUAN_LY","technicianId":null}} (HTTP 200)
+
+$ docker compose exec app npm run test:full   (chỉ hiện phần tổng kết)
+# tests 132
+# suites 0
+# pass 132
+# fail 0
+# cancelled 0
+# skipped 0
+
+=== Bước 5: chạy lại migration lần hai – số dòng không đổi (C8)
+$ psql ... (trước)
+centers | technicians | skills = 2 | 5 | 10
+
+$ docker compose exec -T app npm run migrate
+
+> migrate
+> node src/backend/scripts/migrate.js
+
+◇ injected env (0) from .env
+bỏ qua  001_create_tables.sql (đã chạy)
+bỏ qua  002_seed_catalog.sql (đã chạy)
+bỏ qua  003_appointment_unique_active.sql (đã chạy)
+$ psql ... (sau)
+centers | technicians | skills = 2 | 5 | 10
+
+KẾT QUẢ: [ĐẠT] gói dev dựng được từ thư mục trống bằng 2 lệnh, db + app healthy, /api/health ok, đăng nhập ok, test:full 0 lỗi, migrate lần hai không nhân đôi.
+Chụp màn hình cửa sổ này (cả phần docker compose ps và phần tổng kết test). Nhật ký: /d/smartcrm-2374802010573-smartcrm-mekong-mobile/docs/ket-qua-chay/may-trang.txt
+Dọn dẹp khi xong:  cd "/tmp/kiem-tra-may-trang" && docker compose down -v

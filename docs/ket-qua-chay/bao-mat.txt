@@ -1,0 +1,95 @@
+CHECKLIST BẢO MẬT – 12/11/2026 22:31   nhánh/thẻ: dev   commit: 1b0da63
+
+── Mục 1. Không có secret nào trong repo (A02) ──
+$ git log --all --oneline -- .env
+(rỗng)
+$ git ls-files | grep -E '(^|/)\.env$'
+(rỗng)
+$ git grep -niE "(password|secret|api_?key|token)['\"]?[[:space:]]*[:=][[:space:]]*['\"][^'\"]{4,}" -- src   (chuỗi gán cứng)
+(rỗng, trừ mật khẩu demo công khai demo123 đã ghi trong README)
+    => [ĐẠT] không có .env trong lịch sử, không có chuỗi mật khẩu/khóa gán cứng
+
+── Mục 2. Dữ liệu vào được kiểm ở tầng ứng dụng; SQL tham số hoá (A05) ──
+$ grep -rnE "\$\{" src/backend/src/repositories   (phần chèn vào chuỗi SQL – phải KHÔNG chứa dữ liệu người dùng)
+    src/backend/src/repositories/appointmentRepository.js:24  VALUES ($1,$2,$3,$4) RETURNING ${COLS}`,
+    src/backend/src/repositories/appointmentRepository.js:31  `SELECT ${COLS} FROM appointment WHERE appointment_id = $1${forUpdate ? ' FOR UPDATE' : ''}`, [id]);
+    src/backend/src/repositories/appointmentRepository.js:38  WHERE appointment_id = $1 RETURNING ${COLS}`,
+    src/backend/src/repositories/appointmentRepository.js:46  `UPDATE appointment SET status = 'DA_HUY' WHERE appointment_id = $1 RETURNING ${COLS}`, [id]);
+    src/backend/src/repositories/appointmentRepository.js:52  `SELECT ${COLS} FROM appointment WHERE ticket_id = $1 AND status = 'DA_DAT' ORDER BY start_time`, [ticketId]
+    src/backend/src/repositories/technicianRepository.js:4  FROM technician WHERE technician_id = $1 ${forUpdate ? 'FOR UPDATE' : ''}`;
+    src/backend/src/repositories/technicianRepository.js:18  if (centerId) { params.push(centerId); where += ` AND center_id = $${params.length}`; }
+    src/backend/src/repositories/technicianRepository.js:20  `SELECT technician_id, center_id, full_name, phone, is_active FROM technician ${where}
+    src/backend/src/repositories/ticketRepository.js:10  if (status) { params.push(status); where.push(`status = $${params.length}`); }
+    src/backend/src/repositories/ticketRepository.js:11  if (centerId) { params.push(centerId); where.push(`center_id = $${params.length}`); }
+    src/backend/src/repositories/ticketRepository.js:12  if (technicianId) { params.push(technicianId); where.push(`technician_id = $${params.length}`); }
+    src/backend/src/repositories/ticketRepository.js:14  const sql = `SELECT ${COLS},
+    src/backend/src/repositories/ticketRepository.js:17  FROM ticket ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+    src/backend/src/repositories/ticketRepository.js:23  const sql = `SELECT ${COLS} FROM ticket WHERE ticket_id = $1 ${forUpdate ? 'FOR UPDATE' : ''}`;
+    src/backend/src/repositories/ticketRepository.js:36  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING ${COLS}`,
+    src/backend/src/repositories/ticketRepository.js:46  WHERE ticket_id=$1 RETURNING ${COLS}`,
+    src/backend/src/repositories/ticketRepository.js:54  `UPDATE ticket SET technician_id=$2, status=$3 WHERE ticket_id=$1 RETURNING ${COLS}`,
+    src/backend/src/repositories/ticketRepository.js:60  const { rows } = await db.query(`UPDATE ticket SET status=$2 WHERE ticket_id=$1 RETURNING ${COLS}`, [id, status])
+$ node --test tests/phoneValidation.test.js tests/inputLimits.test.js tests/blankFields.test.js tests/dateValidation.test.js
+# tests 18
+# pass 18
+# fail 0
+    => [ĐẠT] test dữ liệu sai (400) đều PASS; câu SQL chỉ nối hằng số cố định (cột, FOR UPDATE, $n), dữ liệu đi qua $1,$2…
+
+── Mục 3. Kiểm soát truy cập theo chủ sở hữu (A01) ──
+$ curl -i http://localhost:3000/api/tickets   (không token)
+HTTP 401
+$ KTV Hải mở phiếu 18 của KTV Long: GET /tickets/18
+HTTP 403
+$ KTV Hải đổi trạng thái phiếu của Long: POST /tickets/18/status
+HTTP 403
+$ KTV Hải gọi API của quản lý: GET /centers
+HTTP 403
+    => [ĐẠT] 401, 403, 403, 403 đúng như mong đợi (khớp TC-09)
+
+── Mục 4. Mật khẩu / dữ liệu nhạy cảm được băm (A04 · A07) ──
+$ grep -n scryptSync src/backend/src/auth/users.js
+11:const hashPassword = (password, salt) => crypto.scryptSync(password, salt, 32);
+$ node -e (đối tượng người dùng trong bộ nhớ)
+các trường: username, fullName, role, salt, hash
+hash scrypt: fde40035b093596a4bdb7255e452ed14…  (mật khẩu gốc không được lưu)
+    => [ĐẠT] mật khẩu demo được băm bằng scrypt + muối riêng khi khởi động; không có trường mật khẩu gốc; hệ thống không có bảng tài khoản trong CSDL (xem TD-14)
+
+── Mục 5. Thông báo lỗi không lộ cấu trúc trong (A10 · A02) ──
+$ curl -X POST http://localhost:3000/api/auth/login -d '{hỏng'   (JSON hỏng)
+{"error":{"code":"VALIDATION_ERROR","message":"JSON không hợp lệ"}} (HTTP 400)
+    => [ĐẠT] phản hồi JSON hỏng không lộ stack/tên bảng
+$ docker compose stop db   rồi   curl http://localhost:3000/api/tickets   (CSDL chết)
+{"error":{"code":"DB_UNAVAILABLE","message":"Hệ thống tạm thời không kết nối được cơ sở dữ liệu, vui lòng thử lại sau"}} (HTTP 503)
+    => [ĐẠT] CSDL chết → lỗi chung 'Lỗi hệ thống', không có stack, tên bảng hay chuỗi kết nối
+$ docker compose start db   (bật lại)
+NAME                       IMAGE                    COMMAND                  SERVICE   CREATED              STATUS                        PORTS
+kiem-tra-may-trang-app-1   kiem-tra-may-trang-app   "docker-entrypoint.s…"   app       About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp
+kiem-tra-may-trang-db-1    postgres:16-alpine       "docker-entrypoint.s…"   db        About a minute ago   Up 10 seconds (healthy)       5432/tcp
+
+── Mục 6. Nhật ký không ghi secret / dữ liệu cá nhân (A09) ──
+$ docker compose logs app | grep -v dotenv@ | grep -iE "password|token|secret|bearer|0[0-9]{9}"   (bỏ dòng quảng bá của thư viện dotenv)
+(rỗng)
+    => [ĐẠT] nhật ký của app không chứa mật khẩu, token, secret hay số điện thoại
+
+── Mục 7. Phụ thuộc ghim phiên bản và đã kiểm lỗ hổng (A03) ──
+$ git ls-files package-lock.json src/frontend/package-lock.json
+package-lock.json
+src/frontend/package-lock.json
+$ npm audit --omit=dev   (backend + chạy thật)
+# npm audit report
+
+body-parser  2.0.0 - 2.3.0
+Severity: high
+body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body - https://github.com/advisories/GHSA-27r3-jxmh-p828
+fix available via `npm audit fix`
+node_modules/body-parser
+
+1 high severity vulnerability
+
+To address all issues, run:
+  npm audit fix
+$ npm --prefix src/frontend audit --omit=dev   (giao diện)
+found 0 vulnerabilities
+    => [CHÚ Ý] npm audit còn cảnh báo (xem trên) – ghi vào checklist là CHƯA LÀM XONG kèm kế hoạch nâng cấp
+
+Xong. Chụp màn hình các mục (có thể chụp nhiều lần – kéo lên). Nhật ký: /d/smartcrm-2374802010573-smartcrm-mekong-mobile/docs/ket-qua-chay/bao-mat.txt
