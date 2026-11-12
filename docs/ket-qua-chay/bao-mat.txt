@@ -1,4 +1,4 @@
-CHECKLIST BẢO MẬT – 12/11/2026 22:31   nhánh/thẻ: dev   commit: 1b0da63
+CHECKLIST BẢO MẬT – 12/11/2026 22:54   nhánh/thẻ: v1.0   commit: 28d1805
 
 ── Mục 1. Không có secret nào trong repo (A02) ──
 $ git log --all --oneline -- .env
@@ -51,7 +51,7 @@ $ grep -n scryptSync src/backend/src/auth/users.js
 11:const hashPassword = (password, salt) => crypto.scryptSync(password, salt, 32);
 $ node -e (đối tượng người dùng trong bộ nhớ)
 các trường: username, fullName, role, salt, hash
-hash scrypt: fde40035b093596a4bdb7255e452ed14…  (mật khẩu gốc không được lưu)
+hash scrypt: 689c4fd02bf88ba615c96ae6059c49b4…  (mật khẩu gốc không được lưu)
     => [ĐẠT] mật khẩu demo được băm bằng scrypt + muối riêng khi khởi động; không có trường mật khẩu gốc; hệ thống không có bảng tài khoản trong CSDL (xem TD-14)
 
 ── Mục 5. Thông báo lỗi không lộ cấu trúc trong (A10 · A02) ──
@@ -60,11 +60,11 @@ $ curl -X POST http://localhost:3000/api/auth/login -d '{hỏng'   (JSON hỏng)
     => [ĐẠT] phản hồi JSON hỏng không lộ stack/tên bảng
 $ docker compose stop db   rồi   curl http://localhost:3000/api/tickets   (CSDL chết)
 {"error":{"code":"DB_UNAVAILABLE","message":"Hệ thống tạm thời không kết nối được cơ sở dữ liệu, vui lòng thử lại sau"}} (HTTP 503)
-    => [ĐẠT] CSDL chết → lỗi chung 'Lỗi hệ thống', không có stack, tên bảng hay chuỗi kết nối
+    => [ĐẠT] CSDL chết → 503 DB_UNAVAILABLE với thông báo chung (chờ tối đa 5 giây), không có stack, tên bảng hay chuỗi kết nối
 $ docker compose start db   (bật lại)
-NAME                       IMAGE                    COMMAND                  SERVICE   CREATED              STATUS                        PORTS
-kiem-tra-may-trang-app-1   kiem-tra-may-trang-app   "docker-entrypoint.s…"   app       About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp
-kiem-tra-may-trang-db-1    postgres:16-alpine       "docker-entrypoint.s…"   db        About a minute ago   Up 10 seconds (healthy)       5432/tcp
+NAME                       IMAGE                    COMMAND                  SERVICE   CREATED         STATUS                    PORTS
+kiem-tra-may-trang-app-1   kiem-tra-may-trang-app   "docker-entrypoint.s…"   app       3 minutes ago   Up 3 minutes (healthy)    0.0.0.0:3000->3000/tcp
+kiem-tra-may-trang-db-1    postgres:16-alpine       "docker-entrypoint.s…"   db        3 minutes ago   Up 10 seconds (healthy)   5432/tcp
 
 ── Mục 6. Nhật ký không ghi secret / dữ liệu cá nhân (A09) ──
 $ docker compose logs app | grep -v dotenv@ | grep -iE "password|token|secret|bearer|0[0-9]{9}"   (bỏ dòng quảng bá của thư viện dotenv)
@@ -76,20 +76,9 @@ $ git ls-files package-lock.json src/frontend/package-lock.json
 package-lock.json
 src/frontend/package-lock.json
 $ npm audit --omit=dev   (backend + chạy thật)
-# npm audit report
-
-body-parser  2.0.0 - 2.3.0
-Severity: high
-body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body - https://github.com/advisories/GHSA-27r3-jxmh-p828
-fix available via `npm audit fix`
-node_modules/body-parser
-
-1 high severity vulnerability
-
-To address all issues, run:
-  npm audit fix
+found 0 vulnerabilities
 $ npm --prefix src/frontend audit --omit=dev   (giao diện)
 found 0 vulnerabilities
-    => [CHÚ Ý] npm audit còn cảnh báo (xem trên) – ghi vào checklist là CHƯA LÀM XONG kèm kế hoạch nâng cấp
+    => [ĐẠT] hai tệp khoá đã commit; npm audit không có lỗ hổng ở phần chạy thật
 
 Xong. Chụp màn hình các mục (có thể chụp nhiều lần – kéo lên). Nhật ký: /d/smartcrm-2374802010573-smartcrm-mekong-mobile/docs/ket-qua-chay/bao-mat.txt
