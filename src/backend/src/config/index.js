@@ -1,11 +1,15 @@
 require('dotenv').config();
 
 // Đọc cấu hình từ biến môi trường (không hard-code mật khẩu – NFR06)
+// Chờ kết nối CSDL tối đa 5 giây rồi báo lỗi (503) thay vì treo vô hạn khi CSDL chết (checklist bảo mật mục 5).
+const connectionTimeoutMillis = Number(process.env.DB_CONNECT_TIMEOUT_MS) || 5000;
+
 const config = {
   port: Number(process.env.PORT) || 3000,
   db: process.env.DATABASE_URL
-    ? { connectionString: process.env.DATABASE_URL }
+    ? { connectionString: process.env.DATABASE_URL, connectionTimeoutMillis }
     : {
+        connectionTimeoutMillis,
         host: process.env.DB_HOST || 'localhost',
         port: Number(process.env.DB_PORT) || 5432,
         database: process.env.DB_NAME || 'smartcrm',
