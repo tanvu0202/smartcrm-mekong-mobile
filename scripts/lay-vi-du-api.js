@@ -12,11 +12,11 @@ const KTV_BY_PHONE = { '0901000002': 'ktv.hai', '0901000003': 'ktv.long' };
 
 const md = [];
 let tokenMask = [];
-const mask = (s) => tokenMask.reduce((t, k) => t.split(k).join('<token>'), s);
+const mask = (s) => tokenMask.reduce((t, k) => t.split(k).join('<token>'), s).replace(/"token": "[^"]+"/g, '"token": "<token>"'); // che cả token vừa nhận ở chính lần đăng nhập
 
 /** Rút gọn mảng dài (giữ 2 phần tử đầu) để file ví dụ gọn; ghi chú rõ đã rút gọn. */
 function shorten(v) {
-  if (Array.isArray(v) && v.length > 2) return [...v.slice(0, 2).map(shorten), `… (${v.length - 2} more items)`];
+  if (Array.isArray(v)) return v.length > 2 ? [...v.slice(0, 2).map(shorten), `… (${v.length - 2} more items)`] : v.map(shorten);
   if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, shorten(x)]));
   return v;
 }

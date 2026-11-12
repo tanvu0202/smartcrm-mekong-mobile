@@ -70,7 +70,7 @@ if [ -n "$M" ]; then
   sh_ "docker compose stop db   rồi   curl $BASE/tickets   (CSDL chết)"
   dc stop db >/dev/null 2>&1
   B2="$(curl -s -m 30 -w ' (HTTP %{http_code})' -H "Authorization: Bearer $M" "$BASE/tickets")"; say "$B2"
-  if echo "$B2" | grep -qiE "$LEAK"; then res LỖI "phản hồi khi CSDL chết lộ chi tiết nội bộ"; elif echo "$B2" | grep -q 'HTTP 5'; then res ĐẠT "CSDL chết → lỗi chung 'Lỗi hệ thống', không có stack, tên bảng hay chuỗi kết nối"; else res LỖI "phản hồi bất thường (hết thời gian?)"; fi
+  if echo "$B2" | grep -qiE "$LEAK"; then res LỖI "phản hồi khi CSDL chết lộ chi tiết nội bộ"; elif echo "$B2" | grep -q 'HTTP 503'; then res ĐẠT "CSDL chết → 503 DB_UNAVAILABLE với thông báo chung (chờ tối đa 5 giây), không có stack, tên bảng hay chuỗi kết nối"; else res LỖI "mong đợi HTTP 503; HTTP 000 nghĩa là API treo khi CSDL chết (BUG-12)"; fi
   sh_ "docker compose start db   (bật lại)"; dc start db >/dev/null 2>&1
   for i in $(seq 1 30); do [ "$(dc ps | grep -c '(healthy)')" -ge 2 ] && break; sleep 3; done; dc ps | tee -a "$OUT"
 fi
