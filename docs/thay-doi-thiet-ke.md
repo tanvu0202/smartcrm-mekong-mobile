@@ -178,3 +178,16 @@ Nhận xét của giảng viên về Bài tập 2: *"Bài rất tốt: đề xu�
 - Quyết định      : GIỮ NGUYÊN
 - Lý do           : Nhận xét dùng chữ "nên" và bài vẫn đạt đủ mục kiểm chứng 4.2. Liên kết GitHub, thẻ `v0.2` và các commit đã được ghi trong báo cáo Bài tập 2, `README.md`, `docs/bug-log.md` và Bài tập 3; đổi tên ở giai đoạn này làm lệch các liên kết đã nộp. MSSV 2374802010573 được ghi ở đầu `README.md`, `docs/ai-disclosure.md` và tên thư mục làm việc `smartcrm-2374802010573-…`, nên bài vẫn truy được về đúng sinh viên. Nếu giảng viên yêu cầu bắt buộc, có thể đổi tên (GitHub tự chuyển hướng liên kết cũ) trước khi gắn thẻ `v1.0`.
 - Ảnh hưởng       : Không đổi mã nguồn, tài liệu hay liên kết. Các điểm mạnh được nhận xét (đề xuất KTV, cảnh báo ≥ 10 phiếu, lý do khi đổi KTV, không trùng lịch, chuỗi trạng thái, 401/403, CRUD, ba trạng thái giao diện) được giữ nguyên và nay có thêm test hệ thống bảo vệ (TC-01 … TC-12 trong `docs/test-report.md`).
+
+## Thay đổi khi đóng gói và triển khai (Buổi 15–16, Bài tập 3)
+
+### TD-24 Đóng gói bằng Docker Compose: CSDL tự dựng, giao diện được phục vụ cùng cổng với API
+- Trước (BT2, thẻ v0.2): người chạy phải tự cài Node.js, PostgreSQL, chạy 8 bước (cài thư viện, tạo database, migrate, chạy backend, chạy giao diện).
+- Sau (v1.0): `cp .env.example .env` và `docker compose up -d --build`. Dịch vụ `db` (PostgreSQL 16) có healthcheck `pg_isready`; dịch vụ `app` chờ `service_healthy`, chạy `migrate` (tạo bảng và nạp dữ liệu mẫu) rồi mới bật API. CSDL không mở cổng ra máy chủ.
+- Lý do: tiêu chí C1 của BT3 (dựng lại được bằng ≤ 2 lệnh từ thư mục trống, không hỏi sinh viên).
+- Quyết định kèm theo:
+  1. Dùng chính `db/migrations/*.sql` (qua `migrate.js`, có bảng `schema_migrations`, chạy lại an toàn) thay vì chép sang `db/init/` để không có hai bản SQL song song; chạy lại lần hai không nhân đôi dòng (C8).
+  2. Image build giao diện React (Vite) ở giai đoạn riêng rồi Express phục vụ thư mục `dist` (`staticDir` trong `createApp`, chỉ bật khi có thư mục). Cùng origin với API nên không cần CORS; chạy dev (`npm run web`) không đổi. Thêm `tests/static.test.js` (3 test).
+  3. Image chạy bằng người dùng `node` (không root); `.dockerignore` loại `.env`, `node_modules`, `.git`; `.env.example` có giá trị mẫu chạy được.
+  4. Endpoint kiểm tra sức khỏe giữ nguyên `GET /api/health` (trả 503 khi CSDL chết nên Docker báo `unhealthy`).
+- Ảnh hưởng: thêm `Dockerfile`, `docker-compose.yml`, `.dockerignore`; sửa `.env.example`, `src/backend/index.js`, `src/backend/src/app.js`, README. Không đổi nghiệp vụ, API hay CSDL.

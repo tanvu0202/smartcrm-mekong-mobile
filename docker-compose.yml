@@ -1,0 +1,39 @@
+# Hai dịch vụ: db (PostgreSQL 16) và app (API + giao diện). Giá trị lấy từ .env (tạo bằng: cp .env.example .env)
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      # -h 127.0.0.1: chỉ "healthy" khi PostgreSQL thật đã nghe cổng TCP (bước khởi tạo ban đầu của image chỉ nghe qua socket)
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Không có "ports:" -> CSDL chỉ mở trong mạng nội bộ của compose, không lộ ra máy chủ
+
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DB_HOST: db          # tên dịch vụ trong mạng compose, KHÔNG phải localhost
+      DB_PORT: "5432"
+      PORT: "3000"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy   # chờ CSDL SẴN SÀNG, không chỉ "đã khởi động"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+volumes:
+  dbdata:

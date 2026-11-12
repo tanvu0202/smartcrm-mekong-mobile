@@ -10,7 +10,7 @@ const { cors } = require('./middleware/cors');
 const { errorHandler } = require('./middleware/errorHandler');
 
 /** Lắp ráp ứng dụng từ service đã dựng sẵn (để test không cần DB). */
-function createApp({ ticketService, authService, checkDb, corsOrigins = [] }) {
+function createApp({ ticketService, authService, checkDb, corsOrigins = [], staticDir = null }) {
   const app = express();
   app.use(cors(corsOrigins));
   app.use(express.json());
@@ -31,6 +31,9 @@ function createApp({ ticketService, authService, checkDb, corsOrigins = [] }) {
   app.use('/api/tickets', auth, createTicketRoutes(ticketController, { requireManager }));
   app.use('/api/appointments', auth, createAppointmentRoutes(ticketController, { requireManager }));
   app.use('/api', auth, createLookupRoutes(createLookupController(ticketService), { requireManager }));
+
+  // Giao diện đã build (chỉ bật khi có thư mục staticDir, ví dụ trong image Docker): cùng origin với API nên không cần CORS
+  if (staticDir) app.use(express.static(staticDir));
 
   app.use((req, res) => res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Không có route này' } }));
   app.use(errorHandler);

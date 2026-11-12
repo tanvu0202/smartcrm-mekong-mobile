@@ -1,0 +1,13 @@
+# Không đưa vào image: thư viện của máy sinh viên, bí mật, lịch sử git, tài liệu, nhật ký
+node_modules
+**/node_modules
+.env
+**/.env
+.git
+.gitignore
+dist
+**/dist
+*.log
+docs
+*.md
+.DS_Store

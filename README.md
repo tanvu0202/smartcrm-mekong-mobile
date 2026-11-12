@@ -6,6 +6,20 @@
 **Repository:** https://github.com/tanvu0202/smartcrm-mekong-mobile  
 **Luồng nghiệp vụ:** L4 – Phân công kỹ thuật viên và lịch hẹn
 
+## Chạy nhanh bằng Docker (đúng hai lệnh)
+
+Chỉ cần **Docker** và **Git** (không cần cài Node.js hay PostgreSQL). Từ thư mục trống:
+
+```bash
+git clone --branch v1.0 https://github.com/tanvu0202/smartcrm-mekong-mobile.git && cd smartcrm-mekong-mobile
+cp .env.example .env
+docker compose up -d --build
+```
+
+Hai lệnh dựng hệ thống là `cp .env.example .env` và `docker compose up -d --build`. Xong thì mở http://localhost:3000 (đăng nhập bằng nút *Điều phối viên*), kiểm tra bằng `docker compose ps` (cả `db` và `app` phải `healthy`) và `curl http://localhost:3000/api/health`.
+Hướng dẫn đầy đủ bằng tiếng Anh (yêu cầu, biến môi trường, dữ liệu mẫu, cách kiểm tra, xử lý sự cố): [docs/deployment-guide.md](docs/deployment-guide.md).
+Cách chạy không dùng Docker (phát triển, sửa mã) ở các mục 2 và 3 bên dưới.
+
 ## 1. Mô tả bài toán và phạm vi
 
 Phiếu bảo hành ở trạng thái "Mới" → Quản lý phân công kỹ thuật viên phù hợp → (đổi kỹ thuật viên nếu cần, bắt buộc nêu lý do) → Kỹ thuật viên xem phiếu được giao.
@@ -120,7 +134,7 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 
 ## 5. Tài liệu
 
-[SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
+[Deployment Guide](docs/deployment-guide.md) · [SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
 
 ## 6. Trạng thái hiện tại (Bài tập 2 – Buổi 12, 30/10/2026, thẻ `v0.2`)
 
