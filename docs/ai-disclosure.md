@@ -1,8 +1,8 @@
-# Khai báo sử dụng công cụ AI – Buổi 8, 10, 12 và 14
+# Khai báo sử dụng công cụ AI – Buổi 8, 10, 12, 14, 15 và 16
 
 **Họ và tên:** Trần Tấn Vũ  
 **Mã số sinh viên:** 2374802010573  
-**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10) và 30/10/2026 (Buổi 12) và 06/11/2026 (Buổi 14)
+**Ngày thực hiện:** 19/10/2026 (Buổi 8) và 23/10/2026 (Buổi 10) và 30/10/2026 (Buổi 12) và 06/11/2026 (Buổi 14) và 12/11/2026 (Buổi 15–16)
 
 **Cam kết:** Tôi đã đọc, kiểm tra và chịu trách nhiệm về toàn bộ nội dung nộp. Các công cụ AI được dùng nêu đầy đủ trong bảng dưới đây; phần không khai báo là do tôi tự thực hiện.
 
@@ -27,3 +27,8 @@
 | Trợ lý AI dạng chat (Claude) | `docs/test-plan.md`, `docs/test-report.md` (sinh từ kết quả chạy thật), `docs/bug-log.md` (BUG-06..11), `docs/thay-doi-thiet-ke.md` (TD-19..23), `docs/api-contract.md` | Yêu cầu soạn Test Plan, Test Report, Bug Log theo mẫu bảy dòng và ghi thay đổi thiết kế | Đối chiếu từng con số (số test, mã commit, kết quả PASS/FAIL) với ảnh chụp và `git log` trên máy tôi |
 | Không dùng AI | Nội dung nhận xét của giảng viên, quyết định SỬA/GIỮ; ảnh chụp terminal và giao diện của Bài tập 2 (Buổi 12) | – | Do tôi tự chạy lệnh và tự chụp màn hình trên máy của mình |
 | Không dùng AI | Ảnh chụp terminal của 12 test case và 6 lượt xác nhận, các lệnh git, đẩy mã lên GitHub và kiểm tra liên kết commit (Buổi 14) | – | Do tôi tự chạy và tự chụp trên máy của mình |
+| Trợ lý AI dạng chat (Claude) | `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `.env.example`, `src/backend/index.js` và `src/backend/src/app.js` (phục vụ giao diện đã build), `tests/static.test.js` | Yêu cầu đóng gói để dựng lại bằng hai lệnh từ thư mục trống: CSDL tự dựng và tự nạp dữ liệu mẫu, giao diện cùng cổng với API | Tôi tự chạy `bash scripts/thu-may-trang.sh` trên Docker Desktop của tôi; lần đầu build lỗi `MODULE_NOT_FOUND` của rollup trên Alpine, tôi gửi ảnh lỗi, nhận bản vá (TD-25) rồi chạy lại: `docker compose ps` cả hai `(healthy)`, 132 test pass |
+| Trợ lý AI dạng chat (Claude) | `docs/deployment-guide.md`, `docs/api-docs.md` (tiếng Anh), `docs/checklist-bao-mat.md`, `docs/thay-doi-thiet-ke.md` (TD-24, TD-25), `docs/bug-log.md` (BUG-12), `README.md` | Yêu cầu soạn Deployment Guide năm mục, tài liệu API 20 endpoint, checklist bảo mật 7 mục theo mẫu Buổi 15–16; ví dụ API lấy từ lần chạy thật | Đối chiếu từng endpoint, mã lỗi và quy tắc với mã nguồn; chạy lại từng lệnh trong Guide trên máy trắng; kiểm tra các con số (132 test, 0 lỗ hổng) với nhật ký chạy của tôi |
+| Trợ lý AI dạng chat (Claude) | `scripts/thu-may-trang.sh`, `scripts/kiem-tra-bao-mat.sh`, `scripts/lay-vi-du-api.js`; bản sửa BUG-12 (`src/backend/src/db.js`, `config/index.js`, `middleware/errorHandler.js`, `tests/dbUnavailable.test.js`); nâng `body-parser` | Yêu cầu script lấy minh chứng chạy được lại; sau khi mục 5 của checklist báo LỖI thì yêu cầu tìm nguyên nhân và sửa | Tôi tự chạy các script, thấy mục 5 báo lỗi (API treo khi CSDL chết) và mục 7 báo lỗ hổng `body-parser`; chạy `npm audit fix`, kiểm tra lại bằng bộ test, rồi chạy lại cả hai mục trên thẻ `v1.0` đều `[ĐẠT]`; tự gắn thẻ `v1.0` |
+| Trợ lý AI dạng chat (Claude) | File PDF Bài tập 3 (dàn trang, bìa) | Yêu cầu gộp Test Plan, Test Report, Bug Log, Guide, checklist, tài liệu API và ảnh chụp thành một PDF | Đối chiếu nội dung từng mục với tệp trong repo ở thẻ `v1.0`; ảnh chụp trong Mục 7.2–7.4 là ảnh tôi tự chụp trên máy |
+| Không dùng AI | Ảnh chụp terminal của phép thử máy trắng và kiểm tra bảo mật, các lệnh `git merge`, `git tag v1.0`, `git push` (Buổi 15–16) | – | Do tôi tự chạy và tự chụp trên máy của mình |

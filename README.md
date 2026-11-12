@@ -136,6 +136,17 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 
 [Deployment Guide](docs/deployment-guide.md) · [API docs (EN)](docs/api-docs.md) · [Checklist bảo mật](docs/checklist-bao-mat.md) · [Ví dụ API thật](docs/api-examples.md) · [SRS](docs/srs.md) · [Hợp đồng API](docs/api-contract.md) · [Nhật ký thay đổi thiết kế](docs/thay-doi-thiet-ke.md) · [Nhật ký lỗi](docs/bug-log.md) · [Wireframe](docs/diagrams/wireframe.md) · [Sơ đồ draw.io](docs/diagrams/) · [Kết quả chạy](docs/ket-qua-chay/) · [Khai báo AI](docs/ai-disclosure.md)
 
+## Phát hành v1.0 (Bài tập 3 – Buổi 16, 12/11/2026)
+
+| Hạng mục | Trạng thái |
+|---|---|
+| Dựng từ thư mục trống bằng hai lệnh (`cp .env.example .env`, `docker compose up -d --build`) | Xong; phép thử máy trắng trên thẻ `v1.0` đạt (`bash scripts/thu-may-trang.sh v1.0`, nhật ký `docs/ket-qua-chay/may-trang.txt`) |
+| Số test | 132 pass, 0 fail (`docker compose exec app npm run test:full`): 124 của Buổi 14, thêm 3 (`tests/static.test.js`) và 5 (`tests/dbUnavailable.test.js`) |
+| Kiểm thử hệ thống | 12/12 test case PASS sau khi sửa BUG-06..11 (Buổi 14); BUG-12 tìm thấy bằng checklist bảo mật và đã sửa |
+| Checklist bảo mật 7 mục | 7/7 đạt, `npm audit` 0 lỗ hổng (`bash scripts/kiem-tra-bao-mat.sh`, nhật ký `docs/ket-qua-chay/bao-mat.txt`) |
+| Tài liệu | [Deployment Guide](docs/deployment-guide.md) · [API docs](docs/api-docs.md) · [Checklist bảo mật](docs/checklist-bao-mat.md) · [Ví dụ API thật](docs/api-examples.md) |
+| Chưa làm | SMS / email lịch hẹn (FR07), HTTPS, giới hạn đăng nhập sai (xem checklist) |
+
 ## 6. Trạng thái hiện tại (Bài tập 2 – Buổi 12, 30/10/2026, thẻ `v0.2`)
 
 | Hạng mục                                                                                                               | Trạng thái                                                                                                                                                                                                                                                       |
@@ -164,7 +175,7 @@ Xem [docs/ai-disclosure.md](docs/ai-disclosure.md).
 | Chạy một test case hệ thống | `npm run tc -- TC-05` |
 | Chạy cả 12 test case | `npm run tc:all` |
 | Xóa các phiếu thử do test case tạo | `npm run tc:don-dep` |
-| Chạy toàn bộ test đơn vị + tích hợp | `npm run test:full` (124 pass) |
+| Chạy toàn bộ test đơn vị + tích hợp | `npm run test:full` (132 pass ở v1.0) |
 | Xác nhận một bug đã sửa | `npm run xac-nhan -- BUG-07` |
 | Chứng minh bug có thật (bỏ bản sửa → test đỏ) | `bash scripts/chung-minh-hoi-quy.sh BUG-07` |
 
