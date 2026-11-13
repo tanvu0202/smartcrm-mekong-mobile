@@ -1,0 +1,27 @@
+# Render Blueprint: dựng dịch vụ web (Docker) và PostgreSQL miễn phí chỉ bằng một lần bấm "Apply".
+# Hướng dẫn từng bước: docs/deployment-guide.md, mục "Deployment on Render".
+databases:
+  - name: smartcrm-db
+    plan: free
+    region: singapore
+    databaseName: smartcrm
+    user: smartcrm
+    ipAllowList: []            # chỉ dịch vụ web trong cùng Render nối được, không mở ra Internet
+
+services:
+  - type: web
+    name: smartcrm-mekong-mobile
+    runtime: docker            # dùng Dockerfile ở thư mục gốc; khi khởi động tự migrate rồi chạy API + giao diện
+    plan: free
+    region: singapore          # phải trùng vùng với CSDL
+    branch: main
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL      # chuỗi kết nối nội bộ do Render điền, không nằm trong repo
+        fromDatabase:
+          name: smartcrm-db
+          property: connectionString
+      - key: AUTH_SECRET       # khoá ký token: Render tự sinh ngẫu nhiên, không nằm trong repo
+        generateValue: true
+      - key: DEMO_PASSWORD     # mật khẩu chung của 3 tài khoản demo (công khai có chủ đích, xem checklist bảo mật)
+        value: demo123
