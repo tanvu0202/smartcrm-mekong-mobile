@@ -4,6 +4,7 @@
 **Track:** SE  
 **Học phần:** Chuyên đề Tốt nghiệp 1 – Trường ĐH Văn Lang  
 **Repository:** https://github.com/tanvu0202/smartcrm-mekong-mobile  
+**Demo công khai (Render, gói miễn phí):** https://smartcrm-mekong-mobile.onrender.com  
 **Luồng nghiệp vụ:** L4 – Phân công kỹ thuật viên và lịch hẹn
 
 ## Chạy nhanh bằng Docker (đúng hai lệnh)
@@ -145,6 +146,7 @@ Quy ước giao diện: trang trong `pages/` **không** gọi `fetch`; mọi l�
 | Kiểm thử hệ thống | 12/12 test case PASS sau khi sửa BUG-06..11 (Buổi 14); BUG-12 tìm thấy bằng checklist bảo mật và đã sửa |
 | Checklist bảo mật 7 mục | 7/7 đạt, `npm audit` 0 lỗ hổng (`bash scripts/kiem-tra-bao-mat.sh`, nhật ký `docs/ket-qua-chay/bao-mat.txt`) |
 | Tài liệu | [Deployment Guide](docs/deployment-guide.md) · [API docs](docs/api-docs.md) · [Checklist bảo mật](docs/checklist-bao-mat.md) · [Ví dụ API thật](docs/api-examples.md) |
+| Deploy thử (điểm cộng) | Đã chạy trên Render bằng `render.yaml` (Blueprint): https://smartcrm-mekong-mobile.onrender.com; gói miễn phí tự ngủ sau 15 phút không truy cập, lần mở đầu mất khoảng 1 phút; các bước và biến môi trường ở mục 7 của [Deployment Guide](docs/deployment-guide.md) |
 | Chưa làm | SMS / email lịch hẹn (FR07), HTTPS, giới hạn đăng nhập sai (xem checklist) |
 
 ## 6. Trạng thái hiện tại (Bài tập 2 – Buổi 12, 30/10/2026, thẻ `v0.2`)
